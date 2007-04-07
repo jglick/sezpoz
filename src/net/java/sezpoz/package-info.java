@@ -49,7 +49,7 @@
  *     menuitem.addActionListener(new ActionListener() {
  *         public void actionPerformed(ActionEvent e) {
  *             try {
- *                 item.instance().actionPerformed(e);
+ *                 ((ActionListener) item.instance()).actionPerformed(e);
  *             } catch (InstantiationException x) {
  *                 x.printStackTrace();
  *             }
