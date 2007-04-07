@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SezPoz" default="default" basedir=".">
+    <description>Builds, tests, and runs the project SezPoz.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <target name="-javadoc-build" depends="init">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        <javadoc destdir="${dist.javadoc.dir}" source="${javac.source}" notree="${javadoc.notree}" use="${javadoc.use}" nonavbar="${javadoc.nonavbar}" noindex="${javadoc.noindex}" splitindex="${javadoc.splitindex}" author="${javadoc.author}" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}" private="${javadoc.private}" additionalparam="${javadoc.additionalparam}" failonerror="true" useexternalfile="true">
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+            <packageset dir="${src.dir}" includes="${includes}" excludes="${excludes},**/impl/"/>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/" offline="true" packagelistloc="nbproject"/>
+        </javadoc>
+    </target>
+</project>
