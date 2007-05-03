@@ -82,7 +82,7 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
  <p>
  Usage is then simple:
  <pre>
- for (final IndexItem&lt;MenuItem&gt; item : Index.load(MenuItem.class, ActionListener.class)) {
+ for (final IndexItem&lt;MenuItem,ActionListener&gt; item : Index.load(MenuItem.class, ActionListener.class)) {
      JMenu menu = new JMenu(item.annotation().menuName());
      JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
      String icon = item.annotation().iconPath();
