@@ -17,7 +17,7 @@ public class Main {
         JMenuBar bar = new JMenuBar();
         f.setJMenuBar(bar);
         Map<String,JMenu> menus = new HashMap<String,JMenu>();
-        for (final IndexItem<MenuItem> item : Index.load(MenuItem.class)) {
+        for (final IndexItem<MenuItem,ActionListener> item : Index.load(MenuItem.class, ActionListener.class)) {
             String menuName = item.annotation().menu();
             JMenu menu = menus.get(menuName);
             if (menu == null) {
@@ -30,7 +30,7 @@ public class Main {
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        ((ActionListener) item.instance()).actionPerformed(e);
+                        item.instance().actionPerformed(e);
                     } catch (InstantiationException x) {
                         x.printStackTrace();
                     }

@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import javax.swing.Action;
 import junit.framework.TestCase;
 import net.java.sezpoz.impl.TestUtils;
 
@@ -79,7 +80,7 @@ public class IndexTest extends TestCase {
                 "}");
         TestUtils.runApt(src, clz, new File[0], null);
         Class menuItemClazz = loader.loadClass("api.MenuItem");
-        Index index = Index.load(menuItemClazz, loader);
+        Index index = Index.load(menuItemClazz, Action.class, loader);
         Iterator<IndexItem> it = index.iterator();
         assertTrue(it.hasNext());
         IndexItem item = it.next();
@@ -107,7 +108,7 @@ public class IndexTest extends TestCase {
         Object o = item.instance();
         assertEquals(implClazz, o.getClass());
         assertSame("caches instance", o, item.instance());
-        Index index2 = Index.load(menuItemClazz, loader);
+        Index index2 = Index.load(menuItemClazz, Action.class, loader);
         it = index2.iterator();
         assertTrue(it.hasNext());
         IndexItem item2 = it.next();
@@ -134,7 +135,7 @@ public class IndexTest extends TestCase {
             new File(URI.create(Marker.class.getProtectionDomain().getCodeSource().getLocation().toExternalForm()))
         }, null);
         int cnt = 0;
-        for (IndexItem<Marker> item : Index.load(Marker.class, loader)) {
+        for (IndexItem<Marker,Object> item : Index.load(Marker.class, Object.class, loader)) {
             cnt++;
             assertEquals("impl.C", ((Class) item.element()).getName());
             assertEquals("impl.C", item.instance().getClass().getName());
@@ -168,7 +169,7 @@ public class IndexTest extends TestCase {
         TestUtils.runApt(src, clz, new File[0], null);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         int cnt = 0;
-        for (IndexItem item : Index.load(a, loader)) {
+        for (IndexItem item : Index.load(a, Object.class, loader)) {
             cnt++;
             assertEquals("y.C", item.className());
             if (item.kind() == ElementType.FIELD) {
@@ -202,7 +203,7 @@ public class IndexTest extends TestCase {
         TestUtils.runApt(src2, clz2, new File[] {clz}, null);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
-        Iterator it = Index.load(a, loader).iterator();
+        Iterator it = Index.load(a, Object.class, loader).iterator();
         assertTrue(it.hasNext());
         IndexItem item = (IndexItem) it.next();
         assertEquals("y.C1", item.instance().getClass().getName());
@@ -237,7 +238,7 @@ public class IndexTest extends TestCase {
         TestUtils.runApt(src2, clz2, new File[] {clz}, null);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
-        Iterator it = Index.load(a, loader).iterator();
+        Iterator it = Index.load(a, Object.class, loader).iterator();
         assertTrue(it.hasNext());
         IndexItem item = (IndexItem) it.next();
         assertEquals("y.C1", item.instance().getClass().getName());
@@ -273,7 +274,7 @@ public class IndexTest extends TestCase {
         int cnt = 0;
         Annotation[] proxyAnns = new Annotation[3];
         Annotation[] liveAnns = new Annotation[3];
-        for (IndexItem item : Index.load(a, loader)) {
+        for (IndexItem item : Index.load(a, Object.class, loader)) {
             cnt++;
             assertEquals("y.C", item.className());
             Annotation ann = item.annotation();
@@ -347,7 +348,7 @@ public class IndexTest extends TestCase {
                 "public class C {}");
         TestUtils.runApt(src, clz, new File[0], null);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
-        IndexItem item = Index.load(a, loader).iterator().next();
+        IndexItem item = Index.load(a, Object.class, loader).iterator().next();
         Class b = loader.loadClass("x.B");
         Class e = loader.loadClass("x.E");
         Annotation ann = item.annotation();
@@ -391,6 +392,7 @@ public class IndexTest extends TestCase {
 
     // XXX need to test:
     // - verification that interface is indexable
+    // - verification that instance type is valid (try with Void also)
     // - annotation values incl. newlines, quotes, etc.
     // - element() and instance() are truly lazy
     // - access permissions (TBD: can indexed element be private?)

@@ -42,19 +42,22 @@ import net.java.sezpoz.impl.SerTypeConst;
  * May be associated with a class, method, or field.
  * Caches result of {@link #element} and {@link #instance} after first call.
  * Not thread-safe.
- * @param T the type of annotation being loaded
+ * @param A the type of annotation being loaded
+ * @param I the type of instance being loaded
  */
-public final class IndexItem<T extends Annotation> {
+public final class IndexItem<A extends Annotation,I> {
 
     private final SerAnnotatedElement structure;
-    private final Class<T> type;
+    private final Class<A> annotationType;
+    private final Class<I> instanceType;
     private final ClassLoader loader;
     private AnnotatedElement element;
     private Object instance;
 
-    IndexItem(SerAnnotatedElement structure, Class<T> type, ClassLoader loader) throws IOException {
+    IndexItem(SerAnnotatedElement structure, Class<A> annotationType, Class<I> instanceType, ClassLoader loader) throws IOException {
         this.structure = structure;
-        this.type = type;
+        this.annotationType = annotationType;
+        this.instanceType = instanceType;
         this.loader = loader;
     }
 
@@ -67,8 +70,8 @@ public final class IndexItem<T extends Annotation> {
      * (if in fact it has runtime retention, which is encouraged but not required).
      * @return a live or proxy annotation
      */
-    public T annotation() {
-        return proxy(type, structure.values);
+    public A annotation() {
+        return proxy(annotationType, structure.values);
     }
 
     /**
@@ -132,7 +135,7 @@ public final class IndexItem<T extends Annotation> {
      * @throws InstantiationException for the same reasons as {@link #element},
      *                                or if creating the object fails
      */
-    public Object instance() throws InstantiationException {
+    public I instance() throws InstantiationException {
         if (instance == null) {
             AnnotatedElement e = element();
             try {
@@ -149,7 +152,7 @@ public final class IndexItem<T extends Annotation> {
                 throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
             }
         }
-        return instance;
+        return instanceType.cast(instance);
     }
 
     public int hashCode() {
@@ -161,11 +164,11 @@ public final class IndexItem<T extends Annotation> {
             return false;
         }
         IndexItem o = (IndexItem) obj;
-        return structure.equals(o.structure) && type == o.type && loader == o.loader;
+        return structure.equals(o.structure) && annotationType == o.annotationType && loader == o.loader;
     }
 
     public String toString() {
-        return "@" + type.getName() + ":" + structure;
+        return "@" + annotationType.getName() + ":" + structure;
     }
 
     private static <T extends Annotation> T proxy(Class<T> type, Map<String,Object> data) {

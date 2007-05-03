@@ -34,8 +34,8 @@ Sources are in the form of NetBeans projects, but you can build them (and run th
 </p>
 <p>
 (Why the name? SezPoz "says" the "position" of your services. It is also a
-"<a href="http://slovnik.seznam.cz/search.py?wd=seznam&lg=cz_en">seznam</a>
-<a href="http://slovnik.seznam.cz/search.py?wd=pozn%C3%A1mka&lg=cz_en">poznámek</a>".)
+"<a href="http://slovnik.seznam.cz/search.py?wd=seznam&amp;lg=cz_en">seznam</a>
+<a href="http://slovnik.seznam.cz/search.py?wd=pozn%C3%A1mka&amp;lg=cz_en">poznámek</a>".)
 </p>
 <hr>
 <p>
@@ -82,7 +82,7 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
  <p>
  Usage is then simple:
  <pre>
- for (final IndexItem&lt;MenuItem&gt; item : Index.load(MenuItem.class)) {
+ for (final IndexItem&lt;MenuItem&gt; item : Index.load(MenuItem.class, ActionListener.class)) {
      JMenu menu = new JMenu(item.annotation().menuName());
      JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
      String icon = item.annotation().iconPath();
@@ -92,7 +92,7 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
      menuitem.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
              try {
-                 ((ActionListener) item.instance()).actionPerformed(e);
+                 item.instance().actionPerformed(e);
              } catch (InstantiationException x) {
                  x.printStackTrace();
              }
