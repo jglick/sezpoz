@@ -13,7 +13,11 @@ However, SezPoz has some special advantages:
       <p>
       The service registrations are made just using type-checked Java annotations.
       There are no configuration files to edit, and your Java IDE can show you registrations since they are simply usages of an annotation.
+      Currently you need to run APT (with default arguments) instead of or in addition to javac for any sources which may contain indexable items.
+      (It is planned to make it possible to just use javac when you have JDK 6.)
+<!--
       On JDK 6, no special build or packaging steps are required (just javac); on JDK 5, you just need to run APT (with default arguments).
+-->
       Looking up services just requires that you have a <code>ClassLoader</code> which can "see" all of the "modules" (as with <code>ServiceLoader</code>).
       </p>
   </li>
