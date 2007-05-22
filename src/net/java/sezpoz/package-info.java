@@ -24,7 +24,7 @@
  * <pre>
  * public class Actions {
  *     {@literal @}MenuItem(menuName="File", itemName="Print")
- *     public static final Action print() {...}
+ *     public static Action print() {...}
  * }
  * </pre>
  * or even:
