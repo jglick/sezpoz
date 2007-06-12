@@ -3,7 +3,7 @@
     <description>Builds, tests, and runs the project Demo Plug-In #1.</description>
     <import file="nbproject/build-impl.xml"/>
     <target name="-post-compile">
-        <apply executable="apt">
+        <apply executable="apt" parallel="true">
             <arg value="-d"/>
             <arg file="${build.classes.dir}"/>
             <arg value="-classpath"/>
