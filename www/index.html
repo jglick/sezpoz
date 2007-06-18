@@ -105,5 +105,18 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
  }
  </pre>
 
+<p>
+Known limitations:
+</p>
+<ol>
+<li><p>No support yet for processing annotations automatically from JDK 6 javac.</p></li>
+<li><p>Incremental compilation can result in an index file being generated with only some
+of the desired entries, if other source files are omitted e.g. by Ant.
+Does not appear that JSR 269 can solve this, as it does not permit a processor to build output incrementally.</p></li>
+<li><p>The Java language spec currently prohibits recursive annotation definitions,
+although as of this writing javac does not.
+See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6264216">bug #6264216</a>.</p></li>
+</ol>
+
 </body>
 </html>
