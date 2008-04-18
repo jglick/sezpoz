@@ -108,6 +108,7 @@ Known limitations:
 <ol>
 <li><p>When using JDK 5 and apt, incremental compilation can result in an index file being generated with only some
 of the desired entries, if other source files are omitted e.g. by Ant.
+</p><p>
 This scenario works better using JDK 6's javac: if you compile just some sources which are marked with an indexable annotation,
 these entries will be appended to any existing registrations from previous runs of the compiler.
 (You should run a clean build if you <em>delete</em> annotations from sources.</p></li>
