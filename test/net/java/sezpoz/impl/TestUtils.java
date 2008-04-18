@@ -25,15 +25,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+import javax.tools.ToolProvider;
 import junit.framework.TestCase;
 import net.java.sezpoz.Indexable;
 
@@ -73,11 +77,12 @@ public class TestUtils {
      * @param dest a dest dir (also compiles classes there)
      * @param cp classpath entries for processor (Indexable will always be accessible)
      * @param stderr output stream to use, or null for test console
+     * @param jsr199 whether to use JSR 199 (i.e. JDK 6 javac) annotation processing
      */
-    public static void runApt(File src, File dest, File[] cp, PrintWriter stderr) throws Exception {
+    public static void runApt(File src, String srcIncludes, File dest, File[] cp, OutputStream stderr, boolean jsr199) throws Exception {
         List<String> args = new ArrayList<String>();
         String indexableLoc = new File(URI.create(Indexable.class.getProtectionDomain().getCodeSource().getLocation().toExternalForm())).getAbsolutePath();
-        args.add("-factorypath");
+        args.add(jsr199 ? "-processorpath" : "-factorypath");
         args.add(indexableLoc);
         args.add("-classpath");
         StringBuffer b = new StringBuffer(indexableLoc);
@@ -89,22 +94,29 @@ public class TestUtils {
         args.add("-d");
         args.add(dest.getAbsolutePath());
         dest.mkdirs();
-        scan(args, src);
-        if (stderr == null) {
-            stderr = new PrintWriter(System.err);
+        scan(args, src, srcIncludes);
+        if (!jsr199) {
+            args.add("-proc:none");
         }
         //System.err.println("running apt with args: " + args);
-        int res = com.sun.tools.apt.Main.process(stderr, args.toArray(new String[args.size()]));
+        String[] argsA = args.toArray(new String[args.size()]);
+        int res;
+        if (jsr199) {
+            res = ToolProvider.getSystemJavaCompiler().run(null, null, stderr, argsA);
+            //res = com.sun.tools.javac.Main.compile(argsA, stderr);
+        } else {
+            res = com.sun.tools.apt.Main.process(new PrintWriter(stderr != null ? stderr : System.err), argsA);
+        }
         if (res != 0) {
             throw new Exception("nonzero exit code: " + res);
         }
     }
-    private static void scan(List<String> names, File f) {
+    private static void scan(List<String> names, File f, String includes) {
         if (f.isDirectory()) {
             for (File kid : f.listFiles()) {
-                scan(names, kid);
+                scan(names, kid, includes);
             }
-        } else if (f.getName().endsWith(".java")) {
+        } else if (f.getName().endsWith(".java") && (includes == null || Pattern.compile(includes).matcher(f.getName()).find())) {
             names.add(f.getAbsolutePath());
         }
     }
@@ -139,8 +151,11 @@ public class TestUtils {
      * @return map from simple file names to set of SerAnnotatedElement.toString()s
      */
     public static Map<String,SortedSet<String>> findMetadata(File dest) throws Exception {
-        Map<String,SortedSet<String>> metadata = new HashMap<String,SortedSet<String>>();
         File dir = new File(new File(dest, "META-INF"), "annotations");
+        if (!dir.isDirectory()) {
+            return Collections.emptyMap();
+        }
+        Map<String,SortedSet<String>> metadata = new HashMap<String,SortedSet<String>>();
         for (String kid : dir.list()) {
             File f = new File(dir, kid);
             InputStream is = new FileInputStream(f);

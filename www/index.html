@@ -13,11 +13,8 @@ However, SezPoz has some special advantages:
       <p>
       The service registrations are made just using type-checked Java annotations.
       There are no configuration files to edit, and your Java IDE can show you registrations since they are simply usages of an annotation.
-      Currently you need to run APT (with default arguments) instead of or in addition to javac for any sources which may contain indexable items.
-      (It is planned to make it possible to just use javac when you have JDK 6.)
-<!--
       On JDK 6, no special build or packaging steps are required (just javac); on JDK 5, you just need to run APT (with default arguments).
--->
+      instead of or in addition to javac for any sources which may contain indexable items.
       Looking up services just requires that you have a <code>ClassLoader</code> which can "see" all of the "modules" (as with <code>ServiceLoader</code>).
       </p>
   </li>
@@ -109,10 +106,8 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
 Known limitations:
 </p>
 <ol>
-<li><p>No support yet for processing annotations automatically from JDK 6 javac.</p></li>
-<li><p>Incremental compilation can result in an index file being generated with only some
+<li><p>When using JDK 5 and apt, incremental compilation can result in an index file being generated with only some
 of the desired entries, if other source files are omitted e.g. by Ant.
-Does not appear that JSR 269 can solve this, as it does not permit a processor to build output incrementally.</p></li>
 <li><p>The Java language spec currently prohibits recursive annotation definitions,
 although as of this writing javac does not.
 See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6264216">bug #6264216</a>.</p></li>

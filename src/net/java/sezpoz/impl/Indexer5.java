@@ -48,13 +48,13 @@ import net.java.sezpoz.Indexable;
 /**
  * Processor for indexable annotations.
  */
-class Indexer implements AnnotationProcessor {
+class Indexer5 implements AnnotationProcessor {
 
     private final AnnotationProcessorEnvironment env;
     /** map from indexable annotation names, to actual uses */
     private final Map<String,List<SerAnnotatedElement>> output;
 
-    public Indexer(Set<AnnotationTypeDeclaration> ignore, AnnotationProcessorEnvironment env) {
+    public Indexer5(Set<AnnotationTypeDeclaration> ignore, AnnotationProcessorEnvironment env) {
         this.env = env;
         output = new HashMap<String,List<SerAnnotatedElement>>();
     }
@@ -142,17 +142,17 @@ class Indexer implements AnnotationProcessor {
         String className, memberName;
         boolean isMethod;
         if (decl instanceof TypeDeclaration) {
-            className = Indexer.getQualifiedNameUsingShell((TypeDeclaration) decl);
+            className = getQualifiedNameUsingShell((TypeDeclaration) decl);
             memberName = null;
             isMethod = false;
         } else if (decl instanceof MethodDeclaration) {
             MethodDeclaration _decl = (MethodDeclaration) decl;
-            className = Indexer.getQualifiedNameUsingShell(_decl.getDeclaringType());
+            className = getQualifiedNameUsingShell(_decl.getDeclaringType());
             memberName = _decl.getSimpleName();
             isMethod = true;
         } else {
             FieldDeclaration _decl = (FieldDeclaration) decl;
-            className = Indexer.getQualifiedNameUsingShell(_decl.getDeclaringType());
+            className = getQualifiedNameUsingShell(_decl.getDeclaringType());
             memberName = _decl.getSimpleName();
             isMethod = false;
         }
@@ -182,10 +182,10 @@ class Indexer implements AnnotationProcessor {
             return new SerTypeConst(((TypeMirror) annval).toString());
         } else if (annval instanceof EnumConstantDeclaration) {
             EnumConstantDeclaration ecd = (EnumConstantDeclaration) annval;
-            return new SerEnumConst(Indexer.getQualifiedNameUsingShell(ecd.getDeclaringType()), ecd.getSimpleName());
+            return new SerEnumConst(getQualifiedNameUsingShell(ecd.getDeclaringType()), ecd.getSimpleName());
         } else if (annval instanceof AnnotationMirror) {
             AnnotationMirror am = (AnnotationMirror) annval;
-            return new SerAnnConst(Indexer.getQualifiedNameUsingShell(am.getAnnotationType().getDeclaration()),
+            return new SerAnnConst(getQualifiedNameUsingShell(am.getAnnotationType().getDeclaration()),
                     translate(am.getElementValues()));
         } else {
             return annval;

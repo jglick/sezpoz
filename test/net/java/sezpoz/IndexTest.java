@@ -78,7 +78,7 @@ public class IndexTest extends TestCase {
                 "public class PrintAction extends javax.swing.AbstractAction {",
                 "public void actionPerformed(java.awt.event.ActionEvent e) {}",
                 "}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         Class menuItemClazz = loader.loadClass("api.MenuItem");
         Index index = Index.load(menuItemClazz, Action.class, loader);
         Iterator<IndexItem> it = index.iterator();
@@ -131,9 +131,9 @@ public class IndexTest extends TestCase {
                 "import " + Marker.class.getName().replace('$', '.') + ";",
                 "@Marker(stuff=\"hello\")",
                 "public class C {}");
-        TestUtils.runApt(src, clz, new File[] {
+        TestUtils.runApt(src, null, clz, new File[] {
             new File(URI.create(Marker.class.getProtectionDomain().getCodeSource().getLocation().toExternalForm()))
-        }, null);
+        }, null, false);
         int cnt = 0;
         for (IndexItem<Marker,Object> item : Index.load(Marker.class, Object.class, loader)) {
             cnt++;
@@ -166,7 +166,7 @@ public class IndexTest extends TestCase {
                 "@x.A",
                 "public static Object m() {return 2;}",
                 "}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         int cnt = 0;
         for (IndexItem item : Index.load(a, Object.class, loader)) {
@@ -193,14 +193,14 @@ public class IndexTest extends TestCase {
         TestUtils.makeSource(src, "y.C1",
                 "@x.A",
                 "public class C1 {}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         File src2 = new File(dir, "src2");
         TestUtils.makeSource(src2, "z.C2",
                 "@x.A",
                 "public class C2 {}");
         File clz2 = new File(dir, "clz2");
         clz2.mkdirs();
-        TestUtils.runApt(src2, clz2, new File[] {clz}, null);
+        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null, false);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         Iterator it = Index.load(a, Object.class, loader).iterator();
@@ -228,14 +228,14 @@ public class IndexTest extends TestCase {
         TestUtils.makeSource(src, "y.C1",
                 "@x.A(x=1)",
                 "public class C1 {}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         File src2 = new File(dir, "src2");
         TestUtils.makeSource(src2, "y.C1",
                 "@x.A(x=2)",
                 "public class C1 {}");
         File clz2 = new File(dir, "clz2");
         clz2.mkdirs();
-        TestUtils.runApt(src2, clz2, new File[] {clz}, null);
+        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null, false);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         Iterator it = Index.load(a, Object.class, loader).iterator();
@@ -269,7 +269,7 @@ public class IndexTest extends TestCase {
                 "@A(x=17)",
                 "public static void m3() {}",
                 "}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         int cnt = 0;
         Annotation[] proxyAnns = new Annotation[3];
@@ -346,10 +346,10 @@ public class IndexTest extends TestCase {
                 "c=Integer.class",
                 ")",
                 "public class C {}");
-        TestUtils.runApt(src, clz, new File[0], null);
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         IndexItem item = Index.load(a, Object.class, loader).iterator().next();
-        Class b = loader.loadClass("x.B");
+        Class<?> b = loader.loadClass("x.B");
         Class e = loader.loadClass("x.E");
         Annotation ann = item.annotation();
         // Test all structural elements:

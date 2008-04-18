@@ -43,7 +43,7 @@ public class IndexerFactory implements AnnotationProcessorFactory {
     }
 
     public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds, AnnotationProcessorEnvironment env) {
-        return new Indexer(atds, env);
+        return new Indexer5(atds, env);
     }
     
 }
