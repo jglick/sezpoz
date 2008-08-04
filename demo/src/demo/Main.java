@@ -9,11 +9,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.WindowConstants;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 public class Main {
     public static void main(String[] args) {
         JFrame f = new JFrame("Demo");
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JMenuBar bar = new JMenuBar();
         f.setJMenuBar(bar);
         Map<String,JMenu> menus = new HashMap<String,JMenu>();
