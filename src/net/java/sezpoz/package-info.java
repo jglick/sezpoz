@@ -34,7 +34,8 @@
  *     public static final Action PRINT = ...;
  * }
  * </pre>
- * To create the index, simply run apt instead of/in addition to javac.
+ * To create the index on JDK 6, just compile your sources normally with javac.
+ * If using JDK 5, simply run apt instead of/in addition to javac.
  * (The processor is in the same JAR as this API and should be autodetected.)
  * <p>
  * Usage is then simple:
