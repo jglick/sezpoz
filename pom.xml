@@ -16,6 +16,7 @@
     </developers>
     <scm>
         <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/trunk/</connection>
+        <url>https://sezpoz.dev.java.net/source/browse/sezpoz/trunk/</url>
     </scm>
     <dependencies>
         <dependency>
