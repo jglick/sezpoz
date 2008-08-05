@@ -31,8 +31,17 @@ However, SezPoz has some special advantages:
   </li>
 </ol>
 <p>
-Sources are in the form of NetBeans projects, but you can build them (and run the demo) just using Ant.
+Sources are in the form of Maven projects. To build:
 </p>
+<pre>
+mvn install
+</pre>
+<p>
+To try the demo application:
+</p>
+<pre>
+mvn -f demo/app/pom.xml exec:exec
+</pre>
 <p>
 (Why the name? SezPoz "says" the "position" of your services. It is also a
 "<a href="http://slovnik.seznam.cz/search.py?wd=seznam&amp;lg=cz_en">seznam</a>
