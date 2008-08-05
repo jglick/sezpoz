@@ -40,7 +40,8 @@
  * <p>
  * Usage is then simple:
  * <pre>
- * for (final {@literal IndexItem<MenuItem,ActionListener>} item : Index.load(MenuItem.class, ActionListener.class)) {
+ * for (final {@literal IndexItem<MenuItem,ActionListener>} item :
+ *         Index.load(MenuItem.class, ActionListener.class)) {
  *     JMenu menu = new JMenu(item.annotation().menuName());
  *     JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
  *     String icon = item.annotation().iconPath();
