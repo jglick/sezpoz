@@ -7,6 +7,16 @@
     <version>1.0-SNAPSHOT</version>
     <name>SezPoz</name>
     <url>https://sezpoz.dev.java.net/</url>
+    <developers>
+        <developer>
+            <email>jesse.glick@sun.com</email>
+            <name>Jesse Glick</name>
+            <id>jglick</id>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/trunk/</connection>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
