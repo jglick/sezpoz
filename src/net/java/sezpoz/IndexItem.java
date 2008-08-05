@@ -140,7 +140,7 @@ public final class IndexItem<A extends Annotation,I> {
             AnnotatedElement e = element();
             try {
                 if (e instanceof Class) {
-                    instance = ((Class) e).newInstance();
+                    instance = ((Class<?>) e).newInstance();
                 } else if (e instanceof Method) {
                     instance = ((Method) e).invoke(null);
                 } else {
@@ -155,18 +155,21 @@ public final class IndexItem<A extends Annotation,I> {
         return instanceType.cast(instance);
     }
 
+    @Override
     public int hashCode() {
         return className().hashCode();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof IndexItem)) {
             return false;
         }
-        IndexItem o = (IndexItem) obj;
+        IndexItem<? extends Annotation,?> o = (IndexItem<?,?>) obj;
         return structure.equals(o.structure) && annotationType == o.annotationType && loader == o.loader;
     }
 
+    @Override
     public String toString() {
         return "@" + annotationType.getName() + ":" + structure;
     }
@@ -202,7 +205,7 @@ public final class IndexItem<A extends Annotation,I> {
                 for (Method m : type.getDeclaredMethods()) {
                     Object val = annCall(m);
                     int valhash = val.hashCode();
-                    Class arrClazz;
+                    Class<?> arrClazz;
                     if (val instanceof Object[]) {
                         arrClazz = Object[].class;
                     } else {
@@ -229,7 +232,7 @@ public final class IndexItem<A extends Annotation,I> {
                 for (Method m : type.getDeclaredMethods()) {
                     Object myval = annCall(m);
                     Object other = m.invoke(o);
-                    Class arrClazz;
+                    Class<?> arrClazz;
                     if (myval instanceof Object[]) {
                         arrClazz = Object[].class;
                     } else {
@@ -275,7 +278,7 @@ public final class IndexItem<A extends Annotation,I> {
         /**
          * Unwrap a value to a live type.
          */
-        private Object evaluate(Object o, Class expectedType) throws Exception {
+        private Object evaluate(Object o, Class<?> expectedType) throws Exception {
             if (o instanceof SerAnnConst) {
                 SerAnnConst a = (SerAnnConst) o;
                 return proxy(type.getClassLoader().loadClass(a.name).asSubclass(Annotation.class), a.values);
@@ -285,8 +288,8 @@ public final class IndexItem<A extends Annotation,I> {
                 SerEnumConst e = (SerEnumConst) o;
                 return type.getClassLoader().loadClass(e.enumName).getField(e.constName).get(null);
             } else if (o instanceof ArrayList) {
-                List l = (List) o;
-                Class compType = expectedType.getComponentType();
+                List<?> l = (List<?>) o;
+                Class<?> compType = expectedType.getComponentType();
                 int size = l.size();
                 Object arr = Array.newInstance(compType, size);
                 for (int i = 0; i < size; i++) {

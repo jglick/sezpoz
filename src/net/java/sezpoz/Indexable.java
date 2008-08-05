@@ -44,6 +44,6 @@ public @interface Indexable {
      * must be assignable.
      * @return the type of instance
      */
-    Class type() default Object.class;
+    Class<?> type() default Object.class;
     
 }
