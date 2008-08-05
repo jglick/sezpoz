@@ -118,5 +118,13 @@ although as of this writing javac does not.
 See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6264216">bug #6264216</a>.</p></li>
 </ol>
 
+<p>
+Eclipse-specific notes: make sure annotation processing is enabled at least for any
+projects registering objects using annotations. Make sure the SezPoz library is
+in the factory path for annotation processors. You also need to check the box
+<b>Run this container's processor in batch mode</b> from the <b>Advanced</b>
+button in <b>Java Compiler > Annotation Processing > Factory Path</b>.
+</p>
+
 </body>
 </html>
