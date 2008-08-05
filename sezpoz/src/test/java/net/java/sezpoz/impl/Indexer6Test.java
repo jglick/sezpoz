@@ -23,22 +23,19 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeSet;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Test for JDK 6 (JSR 199) version of indexer.
  */
 public class Indexer6Test extends IndexerTestBase {
 
-    public Indexer6Test(String name) {
-        super(name);
-    }
-
-    @Override
     protected boolean useJsr199() {
         return true;
     }
 
-    public void testIncrementalCompilation() throws Exception {
+    @Test public void incrementalCompilation() throws Exception {
         File src1 = new File(dir, "src1");
         TestUtils.makeSource(src1, "Thing",
                 "import java.lang.annotation.*;",

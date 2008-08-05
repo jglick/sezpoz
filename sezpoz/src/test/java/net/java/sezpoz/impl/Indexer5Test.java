@@ -24,11 +24,6 @@ package net.java.sezpoz.impl;
  */
 public class Indexer5Test extends IndexerTestBase {
 
-    public Indexer5Test(String name) {
-        super(name);
-    }
-
-    @Override
     protected boolean useJsr199() {
         return false;
     }

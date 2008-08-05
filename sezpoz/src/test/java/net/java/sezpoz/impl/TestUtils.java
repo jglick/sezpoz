@@ -38,7 +38,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 import javax.tools.ToolProvider;
-import junit.framework.TestCase;
 import net.java.sezpoz.Indexable;
 
 /**
@@ -62,9 +61,16 @@ public class TestUtils {
         }
     }
 
-    public static File getWorkDir(TestCase test) throws IOException {
+    private static Map<String,Integer> counts = new HashMap<String,Integer>();
+    public static File getWorkDir(Object test) throws IOException {
         File base = new File(System.getProperty("workdir", System.getProperty("java.io.tmpdir")));
-        File workdir = new File(new File(base, test.getClass().getName()), test.getName());
+        String name = test.getClass().getName();
+        Integer count = counts.get(name);
+        if (count == null) {
+            count = 0;
+        }
+        counts.put(name, ++count);
+        File workdir = new File(new File(base, name), "test" + count);
         if (!workdir.isDirectory() && !workdir.mkdirs()) {
             throw new IOException(workdir.getAbsolutePath());
         }

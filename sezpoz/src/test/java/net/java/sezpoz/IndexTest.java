@@ -37,22 +37,19 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.swing.Action;
-import junit.framework.TestCase;
 import net.java.sezpoz.impl.TestUtils;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Check that loading of an index works.
  */
-public class IndexTest extends TestCase {
-
-    public IndexTest(String name) {
-        super(name);
-    }
+public class IndexTest {
 
     private File dir, src, clz;
     private ClassLoader loader;
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before public void setUp() throws Exception {
         dir = TestUtils.getWorkDir(this);
         TestUtils.clearDir(dir);
         src = new File(dir, "src");
@@ -62,7 +59,7 @@ public class IndexTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testBasicUsage() throws Exception {
+    @Test public void basicUsage() throws Exception {
         TestUtils.makeSource(src, "api.MenuItem",
                 "import java.lang.annotation.*;",
                 "@Retention(RetentionPolicy.RUNTIME)",
@@ -126,7 +123,7 @@ public class IndexTest extends TestCase {
     private static class Marked1 {}
     @Marker(stuff="goodbye")
     private static class Marked2 {}
-    public void testStaticallyKnownAnnotation() throws Exception {
+    @Test public void staticallyKnownAnnotation() throws Exception {
         TestUtils.makeSource(src, "impl.C",
                 "import " + Marker.class.getName().replace('$', '.') + ";",
                 "@Marker(stuff=\"hello\")",
@@ -153,7 +150,7 @@ public class IndexTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testMethodsAndFields() throws Exception {
+    @Test public void methodsAndFields() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -184,7 +181,7 @@ public class IndexTest extends TestCase {
         assertEquals(2, cnt);
     }
 
-    public void testMultipleCodeSources() throws Exception {
+    @Test public void multipleCodeSources() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -217,7 +214,7 @@ public class IndexTest extends TestCase {
         } catch (NoSuchElementException x) {/*OK*/}
     }
 
-    public void testCodeSourceOverlapping() throws Exception {
+    @Test public void codeSourceOverlapping() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -250,7 +247,7 @@ public class IndexTest extends TestCase {
         } catch (NoSuchElementException x) {/*OK*/}
     }
 
-    public void testDefaultValues() throws Exception {
+    @Test public void defaultValues() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Retention(RetentionPolicy.RUNTIME)",
@@ -311,7 +308,7 @@ public class IndexTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testComplexStructure() throws Exception {
+    @Test public void complexStructure() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Retention(RetentionPolicy.RUNTIME)",

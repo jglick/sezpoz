@@ -26,29 +26,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tries to run indexer and confirms that it serializes annotations correctly.
  */
-public abstract class IndexerTestBase extends TestCase {
-
-    protected IndexerTestBase(String name) {
-        super(name);
-    }
+public abstract class IndexerTestBase {
 
     protected abstract boolean useJsr199();
 
     protected File dir, src, clz;
-    protected @Override void setUp() throws Exception {
-        super.setUp();
+    @Before public void setUp() throws Exception {
         dir = TestUtils.getWorkDir(this);
         TestUtils.clearDir(dir);
         src = new File(dir, "src");
         clz = new File(dir, "clz");
     }
 
-    public void testBasicUsage() throws Exception {
+    @Test public void basicUsage() throws Exception {
         File src1 = new File(dir, "src1");
         TestUtils.makeSource(src1, "api.MenuItem",
                 "import java.lang.annotation.*;",
@@ -75,7 +72,7 @@ public abstract class IndexerTestBase extends TestCase {
                 )), TestUtils.findMetadata(clz2));
     }
 
-    public void testStrangeAnnStringVals() throws Exception {
+    @Test public void strangeAnnStringVals() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -92,7 +89,7 @@ public abstract class IndexerTestBase extends TestCase {
                 )), TestUtils.findMetadata(clz));
     }
 
-    public void testCompositeVals() throws Exception {
+    @Test public void compositeVals() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -119,7 +116,7 @@ public abstract class IndexerTestBase extends TestCase {
                 )), TestUtils.findMetadata(clz));
     }
 
-    public void testDefaultValsNotWritten() throws Exception {
+    @Test public void defaultValsNotWritten() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -164,7 +161,7 @@ public abstract class IndexerTestBase extends TestCase {
         assertEquals(expected, TestUtils.findMetadata(clz));
     }
 
-    public void testSerializeExoticConstants() throws Exception {
+    @Test public void serializeExoticConstants() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -185,7 +182,7 @@ public abstract class IndexerTestBase extends TestCase {
                 )), TestUtils.findMetadata(clz));
     }
 
-    public void testMethodsAndFields() throws Exception {
+    @Test public void methodsAndFields() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
@@ -208,7 +205,7 @@ public abstract class IndexerTestBase extends TestCase {
         }))), TestUtils.findMetadata(clz));
     }
     
-    public void testNestedClasses() throws Exception {
+    @Test public void nestedClasses() throws Exception {
         TestUtils.makeSource(src, "x.Outer",
                 "import java.lang.annotation.*;",
                 "public class Outer {",
