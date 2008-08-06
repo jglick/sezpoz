@@ -46,7 +46,9 @@
     </build>
     <modules>
         <module>sezpoz</module>
+        <!-- Do not want to release this, it is too big:
         <module>perftest</module>
+        -->
         <module>demo</module>
     </modules>
     <distributionManagement>
