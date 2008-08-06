@@ -3,6 +3,8 @@
 <title>SezPoz</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
+
+<h1>Introduction</h1>
 <p>
 SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.
 It provides some of the same capabilities as (for example) <code>java.util.ServiceLoader</code>, Eclipse extension points, and NetBeans <code>Lookup</code> and XML layers.
@@ -31,6 +33,13 @@ However, SezPoz has some special advantages:
   </li>
 </ol>
 <p>
+(Why the name? SezPoz "says" the "position" of your services. It is also a
+"<a href="http://slovnik.seznam.cz/search.py?wd=seznam&amp;lg=cz_en">seznam</a>
+<a href="http://slovnik.seznam.cz/search.py?wd=pozn%C3%A1mka&amp;lg=cz_en">poznámek</a>".)
+</p>
+
+<h1>Sources and Binaries</h1>
+<p>
 Sources are in the form of Maven projects. To build:
 </p>
 <pre>
@@ -43,13 +52,33 @@ To try the demo application:
 mvn -f demo/app/pom.xml exec:exec
 </pre>
 <p>
-(Why the name? SezPoz "says" the "position" of your services. It is also a
-"<a href="http://slovnik.seznam.cz/search.py?wd=seznam&amp;lg=cz_en">seznam</a>
-<a href="http://slovnik.seznam.cz/search.py?wd=pozn%C3%A1mka&amp;lg=cz_en">poznámek</a>".)
+Binaries, sources, and Javadoc can all be downloaded from the
+<a href="http://download.java.net/maven/2/net/java/sezpoz/sezpoz/">Maven repository</a>.
 </p>
-<hr>
 <p>
-Usage summary (see Javadoc for details on particular classes, or just look at demo sources):
+For usage from Maven applications, add the java.net repository
+(<a href="https://maven2-repository.dev.java.net/">details</a>)
+and use the artifact <code>net.java.sezpoz:sezpoz</code>, for example:
+</p>
+<pre>
+&lt;repository>
+  &lt;id>maven2-repository.dev.java.net&lt;/id>
+  &lt;name>Java.net Repository for Maven&lt;/name>
+  &lt;url>http://download.java.net/maven/2/&lt;/url>
+&lt;/repository>
+&lt;dependencies>
+  &lt;dependency>
+    &lt;groupId>net.java.sezpoz&lt;/groupId>
+    &lt;artifactId>sezpoz&lt;/artifactId>
+    &lt;version>1.0&lt;/version>
+  &lt;/dependency>
+&lt;/dependencies>
+</pre>
+
+<h1>Usage Summary</h1>
+<p>
+See Javadoc for details on particular classes, or just look at
+<a href="http://download.java.net/maven/2/net/java/sezpoz/demo/">demo sources</a>.
 <p>
 
 Support for declaring, creating, and inspecting indices of annotated Java elements.
@@ -113,6 +142,7 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
  }
  </pre>
 
+<h1>Notes</h1>
 <p>
 Known limitations:
 </p>
