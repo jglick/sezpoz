@@ -12,20 +12,25 @@
     <name>SezPoz Demo Application</name>
     <dependencies>
         <dependency>
+            <groupId>net.java.sezpoz</groupId>
+            <artifactId>sezpoz</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.java.sezpoz.demo</groupId>
             <artifactId>api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.java.sezpoz.demo</groupId>
             <artifactId>plugin1</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <!-- XXX <scope>runtime</scope> does not seem to work with exec:exec, even using <classpathScope>runtime</classpathScope> -->
         </dependency>
         <dependency>
             <groupId>net.java.sezpoz.demo</groupId>
             <artifactId>plugin2</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>

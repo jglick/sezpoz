@@ -18,14 +18,6 @@
         <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/trunk/</connection>
         <url>https://sezpoz.dev.java.net/source/browse/sezpoz/trunk/</url>
     </scm>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>
