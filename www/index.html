@@ -7,7 +7,8 @@
 <h1>Introduction</h1>
 <p>
 SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.
-It provides some of the same capabilities as (for example) <code>java.util.ServiceLoader</code>, Eclipse extension points, and NetBeans <code>Lookup</code> and XML layers.
+It provides some of the same capabilities as (for example) <code>java.util.ServiceLoader</code>,
+Eclipse extension points, and NetBeans <code>Lookup</code> and XML layers.
 However, SezPoz has some special advantages:
 </p>
 <ol>
@@ -61,11 +62,13 @@ For usage from Maven applications, add the java.net repository
 and use the artifact <code>net.java.sezpoz:sezpoz</code>, for example:
 </p>
 <pre>
-&lt;repository>
-  &lt;id>maven2-repository.dev.java.net&lt;/id>
-  &lt;name>Java.net Repository for Maven&lt;/name>
-  &lt;url>http://download.java.net/maven/2/&lt;/url>
-&lt;/repository>
+&lt;repositories>
+  &lt;repository>
+    &lt;id>maven2-repository.dev.java.net&lt;/id>
+    &lt;name>Java.net Repository for Maven&lt;/name>
+    &lt;url>http://download.java.net/maven/2/&lt;/url>
+  &lt;/repository>
+&lt;/repositories>
 &lt;dependencies>
   &lt;dependency>
     &lt;groupId>net.java.sezpoz&lt;/groupId>
@@ -168,3 +171,4 @@ button in <b>Java Compiler > Annotation Processing > Factory Path</b>.
 
 </body>
 </html>
+<!-- perhaps mention: http://wiki.glassfish.java.net/Wiki.jsp?page=DependencyMechanism -->
