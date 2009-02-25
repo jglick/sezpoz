@@ -156,7 +156,8 @@ of the desired entries, if other source files are omitted e.g. by Ant.
 </p><p>
 This scenario works better using JDK 6's javac: if you compile just some sources which are marked with an indexable annotation,
 these entries will be appended to any existing registrations from previous runs of the compiler.
-(You should run a clean build if you <em>delete</em> annotations from sources.</p></li>
+(You should run a clean build if you <em>delete</em> annotations from sources.)
+</p></li>
 <li><p>The Java language spec currently prohibits recursive annotation definitions,
 although as of this writing javac does not.
 See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6264216">bug #6264216</a>.</p></li>
@@ -173,3 +174,5 @@ button in <b>Java Compiler > Annotation Processing > Factory Path</b>.
 </body>
 </html>
 <!-- perhaps mention: http://wiki.glassfish.java.net/Wiki.jsp?page=DependencyMechanism -->
+<!-- similar to Eclipse: http://jpf.sourceforge.net/ -->
+<!-- can mention that Hudson now uses it -->
