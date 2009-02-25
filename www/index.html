@@ -169,6 +169,11 @@ projects registering objects using annotations. Make sure the SezPoz library is
 in the factory path for annotation processors. You also need to check the box
 <b>Run this container's processor in batch mode</b> from the <b>Advanced</b>
 button in <b>Java Compiler > Annotation Processing > Factory Path</b>.
+There does not appear to be any way for Eclipse to discover processors
+in the regular classpath as JSR 269 stipulates, and there does not appear to be
+any way to make these settings apply automatically to all projects.
+Eclipse users are recommended to use javac (e.g. via Maven) to build.
+<a href="http://help.eclipse.org/stable/index.jsp?topic=/org.eclipse.jdt.doc.isv/guide/jdt_apt_getting_started.htm">Eclipse Help Page</a>
 </p>
 
 </body>
