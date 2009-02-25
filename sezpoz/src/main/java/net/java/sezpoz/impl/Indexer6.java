@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -66,6 +68,14 @@ public class Indexer6 extends AbstractProcessor {
         }
         // map from indexable annotation names, to actual uses
         Map<String,List<SerAnnotatedElement>> output = new HashMap<String,List<SerAnnotatedElement>>();
+        Map<String,Collection<Element>> originatingElementsByAnn = new HashMap<String,Collection<Element>>();
+        scan(annotations, originatingElementsByAnn, roundEnv, output);
+        write(output, originatingElementsByAnn);
+        return false;
+    }
+
+    private void scan(Set<? extends TypeElement> annotations, Map<String,Collection<Element>> originatingElementsByAnn,
+            RoundEnvironment roundEnv, Map<String,List<SerAnnotatedElement>> output) {
         for (TypeElement ann : annotations) {
             AnnotationMirror indexable = null;
             for (AnnotationMirror _indexable : processingEnv.getElementUtils().getAllAnnotationMirrors(ann)) {
@@ -79,12 +89,23 @@ public class Indexer6 extends AbstractProcessor {
                 continue;
             }
             String annName = processingEnv.getElementUtils().getBinaryName(ann).toString();
+            Collection<Element> originatingElements = originatingElementsByAnn.get(annName);
+            if (originatingElements == null) {
+                originatingElements = new ArrayList<Element>();
+                originatingElementsByAnn.put(annName, originatingElements);
+            }
             for (Element elt : roundEnv.getElementsAnnotatedWith(ann)) {
                 String error = verify(elt, ann, indexable);
                 if (error != null) {
-                    processingEnv.getMessager().printMessage(Kind.ERROR, error, elt/*, XXX look up the AnnotationMirror/Value for better diagnostics*/);
+                    for (AnnotationMirror marked : elt.getAnnotationMirrors()) {
+                        if (processingEnv.getElementUtils().getBinaryName((TypeElement) marked.getAnnotationType().asElement()).contentEquals(annName)) {
+                            processingEnv.getMessager().printMessage(Kind.ERROR, error, elt, marked);
+                            break;
+                        }
+                    }
                     continue;
                 }
+                originatingElements.add(elt);
                 List<SerAnnotatedElement> existingOutput = output.get(annName);
                 if (existingOutput == null) {
                     existingOutput = new ArrayList<SerAnnotatedElement>();
@@ -93,7 +114,10 @@ public class Indexer6 extends AbstractProcessor {
                 existingOutput.add(makeSerAnnotatedElement(elt, ann));
             }
         }
-        for (Map.Entry<String, List<SerAnnotatedElement>> outputEntry : output.entrySet()) {
+    }
+
+    private void write(Map<String,List<SerAnnotatedElement>> output, Map<String,Collection<Element>> originatingElementsByAnn) {
+        for (Map.Entry<String,List<SerAnnotatedElement>> outputEntry : output.entrySet()) {
             String annName = outputEntry.getKey();
             try {
                 List<SerAnnotatedElement> elements = outputEntry.getValue();
@@ -122,7 +146,8 @@ public class Indexer6 extends AbstractProcessor {
                     // OK, created for the first time
                 }
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
-                        "", "META-INF/annotations/" + annName/*, XXX originatingElements */);
+                        "", "META-INF/annotations/" + annName,
+                        originatingElementsByAnn.get(annName).toArray(new Element[0]));
                 OutputStream os = out.openOutputStream();
                 try {
                     ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -138,7 +163,6 @@ public class Indexer6 extends AbstractProcessor {
                 processingEnv.getMessager().printMessage(Kind.ERROR, x.toString());
             }
         }
-        return false;
     }
 
     private SerAnnotatedElement makeSerAnnotatedElement(Element elt, TypeElement ann) {
@@ -216,9 +240,41 @@ public class Indexer6 extends AbstractProcessor {
         if (!registration.getModifiers().contains(Modifier.PUBLIC)) {
             return "annotated elements must be public";
         }
-        // XXX check that it is not @Inherited, and that it has the right @Target
-        // XXX check that decl is static if a method, etc.
-        // XXX check that decl is assignable to objType if that is not null
+        switch (registration.getKind()) {
+        case CLASS:
+            if (registration.getModifiers().contains(Modifier.ABSTRACT)) {
+                return "annotated classes must not be abstract";
+            }
+            boolean hasDefaultCtor = false;
+            for (ExecutableElement constructor : ElementFilter.constructorsIn(registration.getEnclosedElements())) {
+                if (constructor.getModifiers().contains(Modifier.PUBLIC) && constructor.getParameters().isEmpty()) {
+                    hasDefaultCtor = true;
+                    break;
+                }
+            }
+            if (!hasDefaultCtor) {
+                return "annotated classes must have a public no-argument constructor";
+            }
+            break;
+        case METHOD:
+            if (!registration.getModifiers().contains(Modifier.STATIC)) {
+                return "annotated methods must be static";
+            }
+            if (!((ExecutableElement) registration).getParameters().isEmpty()) {
+                return "annotated methods must take no parameters";
+            }
+            break;
+        case FIELD:
+            if (!registration.getModifiers().contains(Modifier.STATIC)) {
+                return "annotated fields must be static";
+            }
+            if (!registration.getModifiers().contains(Modifier.FINAL)) {
+                return "annotated fields must be final";
+            }
+            break;
+        default:
+            return "annotations must be on classes, methods, or fields";
+        }
         return null;
     }
 

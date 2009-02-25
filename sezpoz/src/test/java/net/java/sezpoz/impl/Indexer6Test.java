@@ -85,16 +85,44 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.runAptExpectingErrors(src, "A|M2", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|M3", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|M4", clz, null, "public", useJsr199());
-        TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static Object f = null;}");
-        TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A static Object f = null;}");
-        TestUtils.makeSource(src, "y.F3", "public class F3 {@x.A private static Object f = null;}");
+        TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static final Object f = null;}");
+        TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A static final Object f = null;}");
+        TestUtils.makeSource(src, "y.F3", "public class F3 {@x.A private static final Object f = null;}");
         TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "public", useJsr199());
+        // XXX methods and fields must be in a public class
     }
 
-    // XXX to be tested:
-    // - errors for improper indexable annotation types (e.g. @Inherited)
-    // - errors for improper annotated elements (wrong modifiers, wrong ret type, nonstatic nested class, etc.)
+    @Test public void inappropriateModifiersOrArgs() throws Exception {
+        TestUtils.makeSource(src, "x.A",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A {}");
+        TestUtils.makeSource(src, "y.C1", "@x.A public class C1 {}");
+        TestUtils.makeSource(src, "y.C2", "@x.A public abstract class C2 {}");
+        TestUtils.makeSource(src, "y.C3", "@x.A public class C3 {private C3() {}}");
+        TestUtils.makeSource(src, "y.C4", "@x.A public class C4 {public C4(int x) {}}");
+        TestUtils.runApt(src, "A|C1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|C2", clz, null, "abstract", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|C3", clz, null, "constructor", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|C4", clz, null, "constructor", useJsr199());
+        TestUtils.makeSource(src, "y.M1", "public class M1 {@x.A public static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M2", "public class M2 {@x.A public Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M3", "public class M3 {@x.A public static Object m(int x) {return null;}}");
+        TestUtils.runApt(src, "A|M1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M2", clz, null, "static", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M3", clz, null, "parameters", useJsr199());
+        TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static final Object f = null;}");
+        TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A public final Object f = null;}");
+        TestUtils.makeSource(src, "y.F3", "public class F3 {@x.A public static Object f = null;}");
+        TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "static", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "final", useJsr199());
+    }
+
+    // XXX indexable annotations must not be @Inherited, must specify @Target with at least one element and all among TYPE, METHOD, FIELD
+    // XXX annotated element must have type assignable to Indexable.type()
 
 }
