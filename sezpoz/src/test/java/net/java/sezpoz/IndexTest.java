@@ -392,7 +392,7 @@ public class IndexTest {
     // - verification that instance type is valid (try with Void also)
     // - annotation values incl. newlines, quotes, etc.
     // - element() and instance() are truly lazy
-    // - access permissions (TBD: can indexed element be private?)
+    // - access permissions
     // - Class constants can be loaded from different class loader than annotation
 
 }

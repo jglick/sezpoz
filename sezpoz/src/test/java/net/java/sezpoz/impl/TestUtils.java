@@ -19,6 +19,7 @@
 
 package net.java.sezpoz.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -39,6 +40,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 import javax.tools.ToolProvider;
 import net.java.sezpoz.Indexable;
+import org.junit.Assert;
 
 /**
  * Common utilities used during testing.
@@ -80,10 +82,13 @@ public class TestUtils {
     /**
      * Run the apt tool.
      * @param src a source root (runs apt on all *.java it finds)
+     * @param srcIncludes optional regex to limit class names to compile
      * @param dest a dest dir (also compiles classes there)
-     * @param cp classpath entries for processor (Indexable will always be accessible)
+     * @param cp classpath entries for processor (Indexable will always be accessible), or null
      * @param stderr output stream to use, or null for test console
      * @param jsr199 whether to use JSR 199 (i.e. JDK 6 javac) annotation processing
+     * @throws AptFailedException if processing failed
+     * @throws Exception if something unexpected went wrong
      */
     public static void runApt(File src, String srcIncludes, File dest, File[] cp, OutputStream stderr, boolean jsr199) throws Exception {
         List<String> args = new ArrayList<String>();
@@ -92,9 +97,11 @@ public class TestUtils {
         args.add(indexableLoc);
         args.add("-classpath");
         StringBuffer b = new StringBuffer(indexableLoc);
-        for (File entry : cp) {
-            b.append(File.pathSeparatorChar);
-            b.append(entry.getAbsolutePath());
+        if (cp != null) {
+            for (File entry : cp) {
+                b.append(File.pathSeparatorChar);
+                b.append(entry.getAbsolutePath());
+            }
         }
         args.add(b.toString());
         args.add("-d");
@@ -114,7 +121,7 @@ public class TestUtils {
             res = com.sun.tools.apt.Main.process(new PrintWriter(stderr != null ? stderr : System.err), argsA);
         }
         if (res != 0) {
-            throw new Exception("nonzero exit code: " + res);
+            throw new AptFailedException(res);
         }
     }
     private static void scan(List<String> names, File f, String includes) {
@@ -124,6 +131,27 @@ public class TestUtils {
             }
         } else if (f.getName().endsWith(".java") && (includes == null || Pattern.compile(includes).matcher(f.getName()).find())) {
             names.add(f.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Run the apt tool and expect an error to be issued.
+     * @param src a source root (runs apt on all *.java it finds)
+     * @param srcIncludes optional regex to limit class names to compile
+     * @param dest a dest dir (also compiles classes there)
+     * @param cp classpath entries for processor (Indexable will always be accessible), or null
+     * @param error an error you expect to see printed (APT must also fail), else assertion failure
+     * @param jsr199 whether to use JSR 199 (i.e. JDK 6 javac) annotation processing
+     * @throws Exception if something unexpected went wrong
+     */
+    public static void runAptExpectingErrors(File src, String srcIncludes, File dest, File[] cp, String error, boolean jsr199) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            runApt(src, srcIncludes, dest, cp, baos, jsr199);
+            Assert.fail("annotation processing should have failed");
+        } catch (AptFailedException x) {
+            String log = baos.toString();
+            Assert.assertTrue(log, log.contains(error));
         }
     }
     

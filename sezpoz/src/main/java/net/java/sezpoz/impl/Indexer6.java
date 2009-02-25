@@ -40,6 +40,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -79,10 +80,11 @@ public class Indexer6 extends AbstractProcessor {
             }
             String annName = processingEnv.getElementUtils().getBinaryName(ann).toString();
             for (Element elt : roundEnv.getElementsAnnotatedWith(ann)) {
-                // XXX check that it is not @Inherited, and that it has the right @Target
-                // XXX check that decl is public
-                // XXX check that decl is static if a method, etc.
-                // XXX check that decl is assignable to objType if that is not null
+                String error = verify(elt, ann, indexable);
+                if (error != null) {
+                    processingEnv.getMessager().printMessage(Kind.ERROR, error, elt/*, XXX look up the AnnotationMirror/Value for better diagnostics*/);
+                    continue;
+                }
                 List<SerAnnotatedElement> existingOutput = output.get(annName);
                 if (existingOutput == null) {
                     existingOutput = new ArrayList<SerAnnotatedElement>();
@@ -119,7 +121,8 @@ public class Indexer6 extends AbstractProcessor {
                 } catch (FileNotFoundException x) {
                     // OK, created for the first time
                 }
-                FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/annotations/" + annName/*, XXX originatingElements */);
+                FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
+                        "", "META-INF/annotations/" + annName/*, XXX originatingElements */);
                 OutputStream os = out.openOutputStream();
                 try {
                     ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -141,14 +144,24 @@ public class Indexer6 extends AbstractProcessor {
     private SerAnnotatedElement makeSerAnnotatedElement(Element elt, TypeElement ann) {
         String className, memberName;
         boolean isMethod;
-        if (elt instanceof TypeElement) {
+        switch (elt.getKind()) {
+        case CLASS:
             className = processingEnv.getElementUtils().getBinaryName((TypeElement) elt).toString();
             memberName = null;
             isMethod = false;
-        } else {
+            break;
+        case METHOD:
             className = processingEnv.getElementUtils().getBinaryName((TypeElement) elt.getEnclosingElement()).toString();
             memberName = elt.getSimpleName().toString();
-            isMethod = elt instanceof ExecutableElement;
+            isMethod = true;
+            break;
+        case FIELD:
+            className = processingEnv.getElementUtils().getBinaryName((TypeElement) elt.getEnclosingElement()).toString();
+            memberName = elt.getSimpleName().toString();
+            isMethod = false;
+            break;
+        default:
+            throw new AssertionError(elt.getKind());
         }
         return new SerAnnotatedElement(className, memberName, isMethod, translate(elt.getAnnotationMirrors(), ann));
     }
@@ -190,6 +203,23 @@ public class Indexer6 extends AbstractProcessor {
         } else {
             return annval;
         }
+    }
+
+    /**
+     * Checks metadata of a proposed registration.
+     * @param registration a class, method, or field
+     * @param annotation an indexable annotation applied to {@code registration}
+     * @param indexable {@link Indexable} annotation on that annotation
+     * @return an error message, or null if it is valid
+     */
+    private String verify(Element registration, TypeElement annotation, AnnotationMirror indexable) {
+        if (!registration.getModifiers().contains(Modifier.PUBLIC)) {
+            return "annotated elements must be public";
+        }
+        // XXX check that it is not @Inherited, and that it has the right @Target
+        // XXX check that decl is static if a method, etc.
+        // XXX check that decl is assignable to objType if that is not null
+        return null;
     }
 
 }

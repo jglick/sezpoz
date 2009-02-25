@@ -45,7 +45,7 @@ public class Indexer6Test extends IndexerTestBase {
                 "String name();",
                 "}");
         File clz1 = new File(dir, "clz1");
-        TestUtils.runApt(src1, null, clz1, new File[0], null, useJsr199());
+        TestUtils.runApt(src1, null, clz1, null, null, useJsr199());
         File src2 = new File(dir, "src2");
         TestUtils.makeSource(src2, "Impl1",
                 "@Thing(name=\"one\")",
@@ -64,5 +64,37 @@ public class Indexer6Test extends IndexerTestBase {
                 "Impl2{name=two}"
                 ))), TestUtils.findMetadata(clz2));
     }
+
+    // XXX the following should be moved to IndexerTestBase when Indexer5 implements these things:
+
+    @Test public void nonPublic() throws Exception {
+        TestUtils.makeSource(src, "x.A",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A {}");
+        TestUtils.makeSource(src, "y.C1", "@x.A public class C1 {}");
+        TestUtils.makeSource(src, "y.C2", "@x.A class C2 {}");
+        TestUtils.runApt(src, "A|C1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|C2", clz, null, "public", useJsr199());
+        TestUtils.makeSource(src, "y.M1", "public class M1 {@x.A public static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M2", "public class M2 {@x.A static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M3", "public class M3 {@x.A protected static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M4", "public class M4 {@x.A private static Object m() {return null;}}");
+        TestUtils.runApt(src, "A|M1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M2", clz, null, "public", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M3", clz, null, "public", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M4", clz, null, "public", useJsr199());
+        TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static Object f = null;}");
+        TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A static Object f = null;}");
+        TestUtils.makeSource(src, "y.F3", "public class F3 {@x.A private static Object f = null;}");
+        TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "public", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "public", useJsr199());
+    }
+
+    // XXX to be tested:
+    // - errors for improper indexable annotation types (e.g. @Inherited)
+    // - errors for improper annotated elements (wrong modifiers, wrong ret type, nonstatic nested class, etc.)
 
 }
