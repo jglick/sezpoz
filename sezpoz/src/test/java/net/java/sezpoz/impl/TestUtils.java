@@ -107,6 +107,7 @@ public class TestUtils {
         args.add("-d");
         args.add(dest.getAbsolutePath());
         dest.mkdirs();
+        args.add("-Asezpoz.quiet=true");
         scan(args, src, srcIncludes);
         if (!jsr199) {
             args.add("-proc:none");

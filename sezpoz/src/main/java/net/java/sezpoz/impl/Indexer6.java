@@ -40,6 +40,7 @@ import java.util.TreeMap;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
@@ -61,6 +62,7 @@ import net.java.sezpoz.Indexable;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes("*")
+@SupportedOptions("sezpoz.quiet")
 public class Indexer6 extends AbstractProcessor {
 
     /** public for ServiceLoader */
@@ -106,14 +108,17 @@ public class Indexer6 extends AbstractProcessor {
                 originatingElementsByAnn.put(annName, originatingElements);
             }
             for (Element elt : roundEnv.getElementsAnnotatedWith(ann)) {
+                AnnotationMirror marked = null;
+                for (AnnotationMirror _marked : elt.getAnnotationMirrors()) {
+                    if (processingEnv.getElementUtils().getBinaryName((TypeElement) _marked.getAnnotationType().asElement()).contentEquals(annName)) {
+                        marked = _marked;
+                        break;
+                    }
+                }
+                assert marked != null;
                 String error = verify(elt, indexable);
                 if (error != null) {
-                    for (AnnotationMirror marked : elt.getAnnotationMirrors()) {
-                        if (processingEnv.getElementUtils().getBinaryName((TypeElement) marked.getAnnotationType().asElement()).contentEquals(annName)) {
-                            processingEnv.getMessager().printMessage(Kind.ERROR, error, elt, marked);
-                            break;
-                        }
-                    }
+                    processingEnv.getMessager().printMessage(Kind.ERROR, error, elt, marked);
                     continue;
                 }
                 originatingElements.add(elt);
@@ -122,7 +127,13 @@ public class Indexer6 extends AbstractProcessor {
                     existingOutput = new ArrayList<SerAnnotatedElement>();
                     output.put(annName, existingOutput);
                 }
-                existingOutput.add(makeSerAnnotatedElement(elt, ann));
+                SerAnnotatedElement ser = makeSerAnnotatedElement(elt, ann);
+                if (!Boolean.parseBoolean(processingEnv.getOptions().get("sezpoz.quiet"))) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, ser.className.replace('$', '.') +
+                            (ser.memberName != null ? "." + ser.memberName : "") +
+                            " indexed under " + annName.replace('$', '.'));
+                }
+                existingOutput.add(ser);
             }
         }
     }
