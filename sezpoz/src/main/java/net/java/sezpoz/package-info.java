@@ -6,6 +6,7 @@
  * until they are actually selected:
  * <pre>
  * {@literal @}Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+ * {@literal @}Retention(RetentionPolicy.SOURCE)
  * {@literal @}Indexable(type=ActionListener.class)
  * public {@literal @}interface MenuItem {
  *     String menuName();
