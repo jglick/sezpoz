@@ -20,6 +20,7 @@
 package net.java.sezpoz;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,6 +30,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -234,6 +237,41 @@ public class IndexTest {
         clz2.mkdirs();
         TestUtils.runApt(src2, null, clz2, new File[] {clz}, null, false);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
+        Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
+        Iterator it = Index.load(a, Object.class, loader).iterator();
+        assertTrue(it.hasNext());
+        IndexItem item = (IndexItem) it.next();
+        assertEquals("y.C1", item.instance().getClass().getName());
+        assertEquals(1, a.getMethod("x").invoke(item.annotation()));
+        assertFalse("y.C1 only loaded once", it.hasNext());
+        try {
+            it.next();
+            fail();
+        } catch (NoSuchElementException x) {/*OK*/}
+    }
+
+    @Test public void heavyOverlap() throws Exception {
+        TestUtils.makeSource(src, "x.A",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A {",
+                "int x();",
+                "}");
+        TestUtils.makeSource(src, "y.C1",
+                "@x.A(x=1)",
+                "public class C1 {}");
+        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        URL[] urls = new URL[9]; // too slow to make this really big
+        for (int i = 0; i < urls.length; i++) {
+            urls[i] = new URL(new URL("http://" + i + ".nowhere.net/"), "", new URLStreamHandler() {
+                protected URLConnection openConnection(URL u) throws IOException {
+                    URL u2 = new URL(clz.toURI().toURL(), u.getPath().substring(1));
+                    return u2.openConnection();
+                }
+            });
+        }
+        loader = new URLClassLoader(urls);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         Iterator it = Index.load(a, Object.class, loader).iterator();
         assertTrue(it.hasNext());

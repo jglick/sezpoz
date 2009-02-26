@@ -116,37 +116,38 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
         }
 
         private void doPeek() throws Exception {
-            if (next != null || end) {
-                return;
-            }
-            if (ois == null) {
-                if (resources == null) {
-                    resources = loader.getResources("META-INF/annotations/" + annotation.getName());
-                }
-                if (!resources.hasMoreElements()) {
-                    // Exhausted all streams.
-                    end = true;
+            while (true) {
+                if (next != null || end) {
                     return;
                 }
-                ois = new ObjectInputStream(resources.nextElement().openStream());
+                if (ois == null) {
+                    if (resources == null) {
+                        resources = loader.getResources("META-INF/annotations/" + annotation.getName());
+                    }
+                    if (!resources.hasMoreElements()) {
+                        // Exhausted all streams.
+                        end = true;
+                        return;
+                    }
+                    ois = new ObjectInputStream(resources.nextElement().openStream());
+                }
+                SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
+                if (el == null) {
+                    // Skip to next stream.
+                    ois.close();
+                    ois = null;
+                    continue;
+                }
+                String memberName = el.isMethod ? el.className + '#' + el.memberName + "()" :
+                    el.memberName != null ? el.className + '#' + el.memberName :
+                        el.className;
+                if (!loadedMembers.add(memberName)) {
+                    // Already encountered this element, so skip it.
+                    continue;
+                }
+                next = new IndexItem<T,I>(el, annotation, instanceType, loader);
+                break;
             }
-            SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
-            if (el == null) {
-                // Skip to next stream.
-                ois.close();
-                ois = null;
-                doPeek();
-                return;
-            }
-            String memberName = el.isMethod ? el.className + '#' + el.memberName + "()" :
-                el.memberName != null ? el.className + '#' + el.memberName :
-                    el.className;
-            if (!loadedMembers.add(memberName)) {
-                // Already encountered this element, so skip it.
-                doPeek();
-                return;
-            }
-            next = new IndexItem<T,I>(el, annotation, instanceType, loader);
         }
 
         public boolean hasNext() {
