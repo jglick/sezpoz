@@ -40,6 +40,7 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.makeSource(src1, "Thing",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
                 "@net.java.sezpoz.Indexable",
                 "public @interface Thing {",
                 "String name();",
@@ -71,6 +72,7 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
                 "@net.java.sezpoz.Indexable",
                 "public @interface A {}");
         TestUtils.makeSource(src, "y.C1", "@x.A public class C1 {}");
@@ -81,23 +83,27 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.makeSource(src, "y.M2", "public class M2 {@x.A static Object m() {return null;}}");
         TestUtils.makeSource(src, "y.M3", "public class M3 {@x.A protected static Object m() {return null;}}");
         TestUtils.makeSource(src, "y.M4", "public class M4 {@x.A private static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M5", "class M1 {@x.A public static Object m() {return null;}}");
         TestUtils.runApt(src, "A|M1", clz, null, null, useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|M2", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|M3", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|M4", clz, null, "public", useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M5", clz, null, "public", useJsr199());
         TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static final Object f = null;}");
         TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A static final Object f = null;}");
         TestUtils.makeSource(src, "y.F3", "public class F3 {@x.A private static final Object f = null;}");
+        TestUtils.makeSource(src, "y.F4", "class F4 {@x.A public static final Object f = null;}");
         TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "public", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "public", useJsr199());
-        // XXX methods and fields must be in a public class
+        TestUtils.runAptExpectingErrors(src, "A|F4", clz, null, "public", useJsr199());
     }
 
     @Test public void inappropriateModifiersOrArgs() throws Exception {
         TestUtils.makeSource(src, "x.A",
                 "import java.lang.annotation.*;",
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
                 "@net.java.sezpoz.Indexable",
                 "public @interface A {}");
         TestUtils.makeSource(src, "y.C1", "@x.A public class C1 {}");
@@ -122,7 +128,72 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "final", useJsr199());
     }
 
-    // XXX indexable annotations must not be @Inherited, must specify @Target with at least one element and all among TYPE, METHOD, FIELD
-    // XXX annotated element must have type assignable to Indexable.type()
+    @Test public void incompatibleType() throws Exception {
+        TestUtils.makeSource(src, "x.A",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@net.java.sezpoz.Indexable(type=Runnable.class)",
+                "public @interface A {}");
+        TestUtils.makeSource(src, "y.C1", "@x.A public class C1 implements Runnable {public void run() {}}");
+        TestUtils.makeSource(src, "y.C2", "@x.A public class C2 {}");
+        TestUtils.runApt(src, "A|C1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|C2", clz, null, "Runnable", useJsr199());
+        TestUtils.makeSource(src, "y.M1", "public class M1 {@x.A public static Runnable m() {return null;}}");
+        TestUtils.makeSource(src, "y.M2", "public class M2 {@x.A public static Object m() {return null;}}");
+        TestUtils.makeSource(src, "y.M3", "public class M3 implements Runnable {@x.A public static M3 m() {return null;} public void run() {}}");
+        TestUtils.runApt(src, "A|M1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|M2", clz, null, "Runnable", useJsr199());
+        TestUtils.runApt(src, "A|M3", clz, null, null, useJsr199());
+        TestUtils.makeSource(src, "y.F1", "public class F1 {@x.A public static final Runnable f = null;}");
+        TestUtils.makeSource(src, "y.F2", "public class F2 {@x.A public static final Object f = null;}");
+        TestUtils.makeSource(src, "y.F3", "public class F3 implements Runnable {@x.A public static final F3 f = null; public void run() {}}");
+        TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "Runnable", useJsr199());
+        TestUtils.runApt(src, "A|F3", clz, null, null, useJsr199());
+    }
+
+    @Test public void inappropriateIndexable() throws Exception {
+        TestUtils.makeSource(src, "x.A1",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A1 {}");
+        TestUtils.runApt(src, "A1", clz, null, null, useJsr199());
+        TestUtils.makeSource(src, "x.A2",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@Inherited",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A2 {}");
+        TestUtils.runAptExpectingErrors(src, "A2", clz, null, "@Inherited", useJsr199());
+        TestUtils.makeSource(src, "x.A3",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A3 {}");
+        TestUtils.runAptExpectingErrors(src, "A3", clz, null, "CONSTRUCTOR", useJsr199());
+        TestUtils.makeSource(src, "x.A4",
+                "@net.java.sezpoz.Indexable",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "public @interface A4 {}");
+        TestUtils.runAptExpectingErrors(src, "A4", clz, null, "@Target", useJsr199());
+        TestUtils.makeSource(src, "x.A5",
+                "import java.lang.annotation.*;",
+                "@Target({})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A5 {}");
+        TestUtils.runAptExpectingErrors(src, "A5", clz, null, "@Target", useJsr199());
+        TestUtils.makeSource(src, "x.A6",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A6 {}");
+        TestUtils.runAptExpectingErrors(src, "A6", clz, null, "@Retention", useJsr199());
+    }
 
 }

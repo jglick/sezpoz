@@ -25,6 +25,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,6 +71,12 @@ public class Indexer6 extends AbstractProcessor {
         if (roundEnv.processingOver()) {
             return false;
         }
+        for (Element indexable : roundEnv.getElementsAnnotatedWith(Indexable.class)) {
+            String error = verifyIndexable(indexable);
+            if (error != null) {
+                processingEnv.getMessager().printMessage(Kind.ERROR, error, indexable);
+            }
+        }
         // map from indexable annotation names, to actual uses
         Map<String,List<SerAnnotatedElement>> output = new HashMap<String,List<SerAnnotatedElement>>();
         Map<String,Collection<Element>> originatingElementsByAnn = new HashMap<String,Collection<Element>>();
@@ -95,7 +106,7 @@ public class Indexer6 extends AbstractProcessor {
                 originatingElementsByAnn.put(annName, originatingElements);
             }
             for (Element elt : roundEnv.getElementsAnnotatedWith(ann)) {
-                String error = verify(elt, ann, indexable);
+                String error = verify(elt, indexable);
                 if (error != null) {
                     for (AnnotationMirror marked : elt.getAnnotationMirrors()) {
                         if (processingEnv.getElementUtils().getBinaryName((TypeElement) marked.getAnnotationType().asElement()).contentEquals(annName)) {
@@ -236,10 +247,18 @@ public class Indexer6 extends AbstractProcessor {
      * @param indexable {@link Indexable} annotation on that annotation
      * @return an error message, or null if it is valid
      */
-    private String verify(Element registration, TypeElement annotation, AnnotationMirror indexable) {
+    private String verify(Element registration, AnnotationMirror indexable) {
         if (!registration.getModifiers().contains(Modifier.PUBLIC)) {
             return "annotated elements must be public";
         }
+        TypeMirror supertype = processingEnv.getElementUtils().getTypeElement("java.lang.Object").asType();
+        for (Map.Entry<? extends ExecutableElement,? extends AnnotationValue> entry : indexable.getElementValues().entrySet()) {
+            if (!entry.getKey().getSimpleName().contentEquals("type")) {
+                continue;
+            }
+            supertype = (TypeMirror) entry.getValue().getValue();
+        }
+        TypeMirror thistype;
         switch (registration.getKind()) {
         case CLASS:
             if (registration.getModifiers().contains(Modifier.ABSTRACT)) {
@@ -255,25 +274,65 @@ public class Indexer6 extends AbstractProcessor {
             if (!hasDefaultCtor) {
                 return "annotated classes must have a public no-argument constructor";
             }
+            thistype = registration.asType();
             break;
         case METHOD:
+            if (!registration.getEnclosingElement().getModifiers().contains(Modifier.PUBLIC)) {
+                return "annotated methods must be contained in a public class";
+            }
             if (!registration.getModifiers().contains(Modifier.STATIC)) {
                 return "annotated methods must be static";
             }
             if (!((ExecutableElement) registration).getParameters().isEmpty()) {
                 return "annotated methods must take no parameters";
             }
+            thistype = ((ExecutableElement) registration).getReturnType();
             break;
         case FIELD:
+            if (!registration.getEnclosingElement().getModifiers().contains(Modifier.PUBLIC)) {
+                return "annotated fields must be contained in a public class";
+            }
             if (!registration.getModifiers().contains(Modifier.STATIC)) {
                 return "annotated fields must be static";
             }
             if (!registration.getModifiers().contains(Modifier.FINAL)) {
                 return "annotated fields must be final";
             }
+            thistype = ((VariableElement) registration).asType();
             break;
         default:
             return "annotations must be on classes, methods, or fields";
+        }
+        if (!processingEnv.getTypeUtils().isAssignable(thistype, supertype)) {
+            return "not assignable to " + supertype;
+        }
+        return null;
+    }
+
+    private String verifyIndexable(Element indexable) {
+        if (indexable.getAnnotation(Inherited.class) != null) {
+            return "cannot be @Inherited";
+        }
+        Target target = indexable.getAnnotation(Target.class);
+        if (target == null) {
+            return "must be marked with @Target";
+        }
+        if (target.value().length == 0) {
+            return "must have at least one element type in @Target";
+        }
+        for (ElementType type : target.value()) {
+            switch (type) {
+            case TYPE:
+            case METHOD:
+            case FIELD:
+                continue;
+            default:
+                return "should not be permitted on element type " + type;
+            }
+        }
+        Retention retention = indexable.getAnnotation(Retention.class);
+        if (retention == null || retention.value() != RetentionPolicy.SOURCE) {
+            return "should be marked @Retention(RetentionPolicy.SOURCE)";
         }
         return null;
     }
