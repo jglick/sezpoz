@@ -102,7 +102,42 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
 
         private void peek() throws IndexError {
             try {
-                doPeek();
+                for (int iteration = 0; true; iteration++) {
+                    if (iteration == 9999) {
+                        Logger.getLogger(Index.class.getName()).warning(
+                                "possible endless loop getting index for " + annotation + " from " + loader);
+                    }
+                    if (next != null || end) {
+                        return;
+                    }
+                    if (ois == null) {
+                        if (resources == null) {
+                            resources = loader.getResources("META-INF/annotations/" + annotation.getName());
+                        }
+                        if (!resources.hasMoreElements()) {
+                            // Exhausted all streams.
+                            end = true;
+                            return;
+                        }
+                        ois = new ObjectInputStream(resources.nextElement().openStream());
+                    }
+                    SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
+                    if (el == null) {
+                        // Skip to next stream.
+                        ois.close();
+                        ois = null;
+                        continue;
+                    }
+                    String memberName = el.isMethod ? el.className + '#' + el.memberName + "()" :
+                        el.memberName != null ? el.className + '#' + el.memberName :
+                            el.className;
+                    if (!loadedMembers.add(memberName)) {
+                        // Already encountered this element, so skip it.
+                        continue;
+                    }
+                    next = new IndexItem<T,I>(el, annotation, instanceType, loader);
+                    break;
+                }
             } catch (Exception x) {
                 if (ois != null) {
                     try {
@@ -112,41 +147,6 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                     }
                 }
                 throw new IndexError(x);
-            }
-        }
-
-        private void doPeek() throws Exception {
-            while (true) {
-                if (next != null || end) {
-                    return;
-                }
-                if (ois == null) {
-                    if (resources == null) {
-                        resources = loader.getResources("META-INF/annotations/" + annotation.getName());
-                    }
-                    if (!resources.hasMoreElements()) {
-                        // Exhausted all streams.
-                        end = true;
-                        return;
-                    }
-                    ois = new ObjectInputStream(resources.nextElement().openStream());
-                }
-                SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
-                if (el == null) {
-                    // Skip to next stream.
-                    ois.close();
-                    ois = null;
-                    continue;
-                }
-                String memberName = el.isMethod ? el.className + '#' + el.memberName + "()" :
-                    el.memberName != null ? el.className + '#' + el.memberName :
-                        el.className;
-                if (!loadedMembers.add(memberName)) {
-                    // Already encountered this element, so skip it.
-                    continue;
-                }
-                next = new IndexItem<T,I>(el, annotation, instanceType, loader);
-                break;
             }
         }
 
