@@ -4,7 +4,7 @@
     <groupId>net.java.sezpoz</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <name>SezPoz</name>
     <url>https://sezpoz.dev.java.net/</url>
     <developers>
@@ -15,8 +15,8 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/tags/sezpoz-1.3</connection>
-        <url>https://sezpoz.dev.java.net/source/browse/sezpoz/tags/sezpoz-1.3</url>
+        <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/trunk/</connection>
+        <url>https://sezpoz.dev.java.net/source/browse/sezpoz/trunk/</url>
     </scm>
     <issueManagement>
         <system>Issuezilla</system>
