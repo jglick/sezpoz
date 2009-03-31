@@ -60,5 +60,9 @@
  *     });
  * }
  * </pre>
+ * If you want to see what is getting loaded and when,
+ * configure {@link java.util.logging} so that the logger
+ * named {@code net.java.sezpoz} is visible at
+ * {@link java.util.logging.Level#FINER} or above.
  */
 package net.java.sezpoz;
