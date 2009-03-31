@@ -2,14 +2,9 @@
 <actions>
     <action>
         <actionName>run</actionName>
-        <packagings>
-            <packaging>jar</packaging>
-        </packagings>
         <goals>
+            <goal>process-classes</goal>
             <goal>exec:exec</goal>
         </goals>
-        <properties>
-            <exec.args>-classpath %classpath ${main.class}</exec.args>
-        </properties>
     </action>
 </actions>
