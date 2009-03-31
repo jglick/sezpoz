@@ -7,6 +7,7 @@
     <version>1.4-SNAPSHOT</version>
     <name>SezPoz</name>
     <url>https://sezpoz.dev.java.net/</url>
+    <description>SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.</description>
     <developers>
         <developer>
             <email>jesse.glick@sun.com</email>
