@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +42,8 @@ import net.java.sezpoz.impl.SerAnnotatedElement;
  * @param I the type of instance which will be created
  */
 public final class Index<T extends Annotation, I> implements Iterable<IndexItem<T,I>> {
+
+    private static final Logger LOGGER = Logger.getLogger(Index.class.getName());
 
     /**
      * Load an index for a given annotation type.
@@ -98,14 +102,23 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
         private boolean end;
         private final Set<String> loadedMembers = new HashSet<String>();
 
-        public LazyIndexIterator() {}
+        public LazyIndexIterator() {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                String urls;
+                if (loader instanceof URLClassLoader) {
+                    urls = " " + Arrays.toString(((URLClassLoader) loader).getURLs());
+                } else {
+                    urls = "";
+                }
+                LOGGER.fine("Searching for indices of " + annotation + " in " + loader + urls);
+            }
+        }
 
         private void peek() throws IndexError {
             try {
                 for (int iteration = 0; true; iteration++) {
                     if (iteration == 9999) {
-                        Logger.getLogger(Index.class.getName()).warning(
-                                "possible endless loop getting index for " + annotation + " from " + loader);
+                        LOGGER.warning("possible endless loop getting index for " + annotation + " from " + loader);
                     }
                     if (next != null || end) {
                         return;
@@ -119,7 +132,9 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                             end = true;
                             return;
                         }
-                        ois = new ObjectInputStream(resources.nextElement().openStream());
+                        URL resource = resources.nextElement();
+                        LOGGER.log(Level.FINE, "Loading index from {0}", resource);
+                        ois = new ObjectInputStream(resource.openStream());
                     }
                     SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
                     if (el == null) {
@@ -133,6 +148,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                             el.className;
                     if (!loadedMembers.add(memberName)) {
                         // Already encountered this element, so skip it.
+                        LOGGER.log(Level.FINE, "Already loaded index item {0}", el);
                         continue;
                     }
                     next = new IndexItem<T,I>(el, annotation, instanceType, loader);
@@ -143,7 +159,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                     try {
                         ois.close();
                     } catch (IOException x2) {
-                        Logger.getLogger(Index.class.getName()).log(Level.WARNING, null, x2);
+                        LOGGER.log(Level.WARNING, null, x2);
                     }
                 }
                 throw new IndexError(x);

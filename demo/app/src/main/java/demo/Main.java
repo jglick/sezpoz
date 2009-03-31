@@ -4,6 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -14,6 +18,11 @@ import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 public class Main {
     public static void main(String[] args) {
+        Logger logger = Logger.getLogger("net.java.sezpoz");
+        logger.setLevel(Level.ALL);
+        Handler handler = new ConsoleHandler();
+        handler.setLevel(Level.ALL);
+        logger.addHandler(handler);
         JFrame f = new JFrame("Demo");
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JMenuBar bar = new JMenuBar();

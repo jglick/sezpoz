@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.sezpoz.impl.SerAnnConst;
 import net.java.sezpoz.impl.SerAnnotatedElement;
 import net.java.sezpoz.impl.SerEnumConst;
@@ -47,6 +49,8 @@ import net.java.sezpoz.impl.SerTypeConst;
  */
 public final class IndexItem<A extends Annotation,I> {
 
+    private static final Logger LOGGER = Logger.getLogger(IndexItem.class.getName());
+
     private final SerAnnotatedElement structure;
     private final Class<A> annotationType;
     private final Class<I> instanceType;
@@ -59,6 +63,7 @@ public final class IndexItem<A extends Annotation,I> {
         this.annotationType = annotationType;
         this.instanceType = instanceType;
         this.loader = loader;
+        LOGGER.log(Level.FINE, "Loaded index item {0}", structure);
     }
 
     /**
@@ -114,6 +119,7 @@ public final class IndexItem<A extends Annotation,I> {
                 } else {
                     element = impl;
                 }
+                LOGGER.log(Level.FINER, "Loaded annotated element: {0}", element);
             } catch (Exception x) {
                 throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
             }
@@ -146,6 +152,7 @@ public final class IndexItem<A extends Annotation,I> {
                 } else {
                     instance = ((Field) e).get(null);
                 }
+                LOGGER.log(Level.FINER, "Loaded instance: {0}", instance);
             } catch (InstantiationException x) {
                 throw x;
             } catch (Exception x) {
