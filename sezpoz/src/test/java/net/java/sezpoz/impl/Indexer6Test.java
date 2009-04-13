@@ -126,6 +126,14 @@ public class Indexer6Test extends IndexerTestBase {
         TestUtils.runApt(src, "A|F1", clz, null, null, useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F2", clz, null, "static", useJsr199());
         TestUtils.runAptExpectingErrors(src, "A|F3", clz, null, "final", useJsr199());
+        TestUtils.makeSource(src, "y.N1", "public class N1 {@x.A public static class N {}}");
+        TestUtils.makeSource(src, "y.N2", "public class N2 {@x.A public class N {}}");
+        TestUtils.runApt(src, "A|N1", clz, null, null, useJsr199());
+        TestUtils.runAptExpectingErrors(src, "A|N2", clz, null, "static", useJsr199());
+        /* XXX 269 processors will not even see this:
+        TestUtils.makeSource(src, "y.N3", "public class N3 {void m() {@x.A class N {}}}");
+        TestUtils.runAptExpectingErrors(src, "A|N3", clz, null, "static", useJsr199());
+         */
     }
 
     @Test public void incompatibleType() throws Exception {

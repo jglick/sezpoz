@@ -46,6 +46,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -284,6 +285,10 @@ public class Indexer6 extends AbstractProcessor {
             }
             if (!hasDefaultCtor) {
                 return "annotated classes must have a public no-argument constructor";
+            }
+            Element enclosing = registration.getEnclosingElement();
+            if (enclosing != null && enclosing.getKind() != ElementKind.PACKAGE && !registration.getModifiers().contains(Modifier.STATIC)) {
+                return "annotated nested classes must be static";
             }
             thistype = registration.asType();
             break;
