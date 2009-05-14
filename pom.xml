@@ -48,6 +48,9 @@
             </extension>
         </extensions>
     </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <modules>
         <module>sezpoz</module>
         <!-- Do not want to release this, it is too big:
