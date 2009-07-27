@@ -78,6 +78,11 @@ public class Indexer6 extends AbstractProcessor {
             String error = verifyIndexable(indexable);
             if (error != null) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, error, indexable);
+            } else {
+                Retention retention = indexable.getAnnotation(Retention.class);
+                if (retention == null || retention.value() != RetentionPolicy.SOURCE) {
+                    processingEnv.getMessager().printMessage(Kind.WARNING, "should be marked @Retention(RetentionPolicy.SOURCE)", indexable);
+                }
             }
         }
         // map from indexable annotation names, to actual uses
@@ -346,10 +351,6 @@ public class Indexer6 extends AbstractProcessor {
             default:
                 return "should not be permitted on element type " + type;
             }
-        }
-        Retention retention = indexable.getAnnotation(Retention.class);
-        if (retention == null || retention.value() != RetentionPolicy.SOURCE) {
-            return "should be marked @Retention(RetentionPolicy.SOURCE)";
         }
         return null;
     }

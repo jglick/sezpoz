@@ -19,6 +19,7 @@
 
 package net.java.sezpoz.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -201,7 +202,10 @@ public class Indexer6Test extends IndexerTestBase {
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
                 "@net.java.sezpoz.Indexable",
                 "public @interface A6 {}");
-        TestUtils.runAptExpectingErrors(src, "A6", clz, null, "@Retention", useJsr199());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        TestUtils.runApt(src, "A6", clz, null, baos, useJsr199());
+        baos.flush();
+        assertTrue("output warns about @Retention: " + baos, baos.toString().contains("@Retention"));
     }
 
 }
