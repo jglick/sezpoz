@@ -151,6 +151,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                         LOGGER.log(Level.FINE, "Already loaded index item {0}", el);
                         continue;
                     }
+                    // XXX JRE #6865375 would make loader param accurate for duplicated modules
                     next = new IndexItem<T,I>(el, annotation, instanceType, loader);
                     break;
                 }
