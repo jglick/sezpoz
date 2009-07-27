@@ -219,17 +219,41 @@ public abstract class IndexerTestBase {
                 "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
                 "@net.java.sezpoz.Indexable",
                 "@Retention(RetentionPolicy.SOURCE)",
-                "public @interface A {}",
+                "public @interface A {",
+                "Class<?> type();",
+                "}",
                 "}");
         TestUtils.makeSource(src, "y.Auter",
                 "public class Auter {",
-                "@x.Outer.A",
+                "public static class T {}",
+                "@x.Outer.A(type=T.class)",
                 "public static class C {}",
                 "}");
         TestUtils.runApt(src, null, clz, null, null, useJsr199());
         assertEquals(Collections.singletonMap("x.Outer$A", Collections.singleton(
-                "y.Auter$C{}"
+                "y.Auter$C{type=y.Auter$T}"
                 )), TestUtils.findMetadata(clz));
     }
+
+    /* Uncompilable anyway: "annotation value must be a class literal"
+    @Test public void exoticClassConstants() throws Exception {
+        TestUtils.makeSource(src, "x.A",
+                "import java.lang.annotation.*;",
+                "@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})",
+                "@Retention(RetentionPolicy.SOURCE)",
+                "@net.java.sezpoz.Indexable",
+                "public @interface A {",
+                "Class[] clazz();",
+                "}");
+        TestUtils.makeSource(src, "y.C",
+                "import x.*;",
+                "@A(clazz={Integer.class, Integer.TYPE})",
+                "public class C {}");
+        TestUtils.runApt(src, null, clz, null, null, useJsr199());
+        assertEquals(Collections.singletonMap("x.A", Collections.singleton(
+                "y.C{clazz=[java.lang.Integer, int]}"
+                )), TestUtils.findMetadata(clz));
+    }
+     */
 
 }

@@ -31,6 +31,7 @@ import com.sun.mirror.declaration.EnumConstantDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.TypeMirror;
 import java.io.File;
 import java.io.IOException;
@@ -179,7 +180,7 @@ class Indexer5 implements AnnotationProcessor {
             }
             return values;
         } else if (annval instanceof TypeMirror) {
-            return new SerTypeConst(((TypeMirror) annval).toString());
+            return new SerTypeConst(getQualifiedNameUsingShell(((DeclaredType) annval).getDeclaration()));
         } else if (annval instanceof EnumConstantDeclaration) {
             EnumConstantDeclaration ecd = (EnumConstantDeclaration) annval;
             return new SerEnumConst(getQualifiedNameUsingShell(ecd.getDeclaringType()), ecd.getSimpleName());

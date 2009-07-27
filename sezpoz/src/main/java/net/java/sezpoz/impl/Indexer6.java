@@ -235,7 +235,8 @@ public class Indexer6 extends AbstractProcessor {
             }
             return values;
         } else if (annval instanceof TypeMirror) {
-            return new SerTypeConst(((TypeMirror) annval).toString()); // XXX is TypeMirror.toString safe enough?
+            return new SerTypeConst(processingEnv.getElementUtils().getBinaryName(
+                    (TypeElement) processingEnv.getTypeUtils().asElement((TypeMirror) annval)).toString());
         } else if (annval instanceof VariableElement) {
             VariableElement elt = (VariableElement) annval;
             return new SerEnumConst(processingEnv.getElementUtils().getBinaryName(

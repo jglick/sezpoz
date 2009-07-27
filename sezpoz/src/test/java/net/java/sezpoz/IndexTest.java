@@ -358,6 +358,7 @@ public class IndexTest {
                 "int[] xs();",
                 "E e();",
                 "Class c();",
+                "class Nested {}",
                 "}");
         TestUtils.makeSource(src, "x.B",
                 "import java.lang.annotation.*;",
@@ -378,7 +379,7 @@ public class IndexTest {
                 "bs={@B(x=2), @B(x=3, ys=17, es=E.VANILLA)},",
                 "xs={6, 7},",
                 "e=E.CHOCOLATE,",
-                "c=Integer.class",
+                "c=A.Nested.class",
                 ")",
                 "public class C {}");
         TestUtils.runApt(src, null, clz, new File[0], null, false);
@@ -417,7 +418,7 @@ public class IndexTest {
         assertEquals(6, xs[0]);
         assertEquals(7, xs[1]);
         assertEquals(e.getField("CHOCOLATE").get(null), a.getMethod("e").invoke(ann));
-        assertEquals(Integer.class, a.getMethod("c").invoke(ann));
+        assertEquals(loader.loadClass("x.A$Nested"), a.getMethod("c").invoke(ann));
         // Check also object comparisons:
         Annotation live = item.element().getAnnotation(a);
         assertEquals(live, ann);
