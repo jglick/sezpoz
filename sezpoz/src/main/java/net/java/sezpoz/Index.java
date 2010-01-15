@@ -110,7 +110,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                 } else {
                     urls = "";
                 }
-                LOGGER.fine("Searching for indices of " + annotation + " in " + loader + urls);
+                LOGGER.log(Level.FINE, "Searching for indices of {0} in {1}{2}", new Object[] {annotation, loader, urls});
             }
         }
 
@@ -118,7 +118,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
             try {
                 for (int iteration = 0; true; iteration++) {
                     if (iteration == 9999) {
-                        LOGGER.warning("possible endless loop getting index for " + annotation + " from " + loader);
+                        LOGGER.log(Level.WARNING, "possible endless loop getting index for {0} from {1}", new Object[] {annotation, loader});
                     }
                     if (next != null || end) {
                         return;
