@@ -98,6 +98,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
 
         private Enumeration<URL> resources;
         private ObjectInputStream ois;
+        private URL resource;
         private IndexItem<T,I> next;
         private boolean end;
         private final Set<String> loadedMembers = new HashSet<String>();
@@ -132,7 +133,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                             end = true;
                             return;
                         }
-                        URL resource = resources.nextElement();
+                        resource = resources.nextElement();
                         LOGGER.log(Level.FINE, "Loading index from {0}", resource);
                         ois = new ObjectInputStream(resource.openStream());
                     }
@@ -152,7 +153,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                         continue;
                     }
                     // XXX JRE #6865375 would make loader param accurate for duplicated modules
-                    next = new IndexItem<T,I>(el, annotation, instanceType, loader);
+                    next = new IndexItem<T,I>(el, annotation, instanceType, loader, resource);
                     break;
                 }
             } catch (Exception x) {

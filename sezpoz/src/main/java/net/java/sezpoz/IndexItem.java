@@ -19,6 +19,7 @@
 
 package net.java.sezpoz;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -28,12 +29,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.java.sezpoz.impl.SerAnnConst;
 import net.java.sezpoz.impl.SerAnnotatedElement;
 import net.java.sezpoz.impl.SerEnumConst;
@@ -55,14 +60,16 @@ public final class IndexItem<A extends Annotation,I> {
     private final Class<A> annotationType;
     private final Class<I> instanceType;
     private final ClassLoader loader;
+    private final URL resource;
     private AnnotatedElement element;
     private Object instance;
 
-    IndexItem(SerAnnotatedElement structure, Class<A> annotationType, Class<I> instanceType, ClassLoader loader) throws IOException {
+    IndexItem(SerAnnotatedElement structure, Class<A> annotationType, Class<I> instanceType, ClassLoader loader, URL resource) throws IOException {
         this.structure = structure;
         this.annotationType = annotationType;
         this.instanceType = instanceType;
         this.loader = loader;
+        this.resource = resource;
         LOGGER.log(Level.FINE, "Loaded index item {0}", structure);
     }
 
@@ -121,10 +128,20 @@ public final class IndexItem<A extends Annotation,I> {
                 }
                 LOGGER.log(Level.FINER, "Loaded annotated element: {0}", element);
             } catch (Exception x) {
-                throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
+                throw (InstantiationException) new InstantiationException(labelFor(resource) + " might need to be rebuilt: " + x).initCause(x);
             }
         }
         return element;
+    }
+
+    private static String labelFor(URL resource) {
+        String u = resource.toString();
+        Matcher m = Pattern.compile("jar:(file:.+)!/.+").matcher(u);
+        if (m.matches()) {
+            return new File(URI.create(m.group(1))).getAbsolutePath();
+        } else {
+            return u;
+        }
     }
 
     /**
