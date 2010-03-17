@@ -162,7 +162,7 @@ public final class IndexItem<A extends Annotation,I> {
         if (instance == null) {
             AnnotatedElement e = element();
             try {
-                if (e instanceof Class) {
+                if (e instanceof Class<?>) {
                     instance = ((Class<?>) e).newInstance();
                 } else if (e instanceof Method) {
                     instance = ((Method) e).invoke(null);
@@ -186,7 +186,7 @@ public final class IndexItem<A extends Annotation,I> {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof IndexItem)) {
+        if (!(obj instanceof IndexItem<?,?>)) {
             return false;
         }
         IndexItem<? extends Annotation,?> o = (IndexItem<?,?>) obj;
@@ -311,7 +311,7 @@ public final class IndexItem<A extends Annotation,I> {
             } else if (o instanceof SerEnumConst) {
                 SerEnumConst e = (SerEnumConst) o;
                 return type.getClassLoader().loadClass(e.enumName).getField(e.constName).get(null);
-            } else if (o instanceof ArrayList) {
+            } else if (o instanceof ArrayList<?>) {
                 List<?> l = (List<?>) o;
                 Class<?> compType = expectedType.getComponentType();
                 int size = l.size();
