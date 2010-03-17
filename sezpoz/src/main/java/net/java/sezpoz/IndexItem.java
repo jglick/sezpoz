@@ -129,6 +129,8 @@ public final class IndexItem<A extends Annotation,I> {
                 LOGGER.log(Level.FINER, "Loaded annotated element: {0}", element);
             } catch (Exception x) {
                 throw (InstantiationException) new InstantiationException(labelFor(resource) + " might need to be rebuilt: " + x).initCause(x);
+            } catch (LinkageError x) {
+                throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
             }
         }
         return element;
@@ -173,6 +175,8 @@ public final class IndexItem<A extends Annotation,I> {
             } catch (InstantiationException x) {
                 throw x;
             } catch (Exception x) {
+                throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
+            } catch (LinkageError x) {
                 throw (InstantiationException) new InstantiationException(x.toString()).initCause(x);
             }
         }
