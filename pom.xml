@@ -23,6 +23,12 @@
         <system>Issuezilla</system>
         <url>https://sezpoz.dev.java.net/nonav/issues/</url>
     </issueManagement>
+    <licenses>
+        <license>
+            <name>CDDL or GPL 2 with Classpath Exception</name>
+            <url>http://www.netbeans.org/cddl-gplv2.html</url>
+        </license>
+    </licenses>
     <build>
         <pluginManagement>
             <plugins>
