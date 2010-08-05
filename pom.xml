@@ -4,7 +4,7 @@
     <groupId>net.java.sezpoz</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.8</version>
     <name>SezPoz</name>
     <url>https://sezpoz.dev.java.net/</url>
     <description>SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.</description>
@@ -16,8 +16,8 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/trunk/</connection>
-        <url>https://sezpoz.dev.java.net/source/browse/sezpoz/trunk/</url>
+        <connection>scm:svn:https://sezpoz.dev.java.net/svn/sezpoz/tags/pom-1.8</connection>
+        <url>https://sezpoz.dev.java.net/source/browse/sezpoz/tags/pom-1.8</url>
     </scm>
     <issueManagement>
         <system>Issuezilla</system>
