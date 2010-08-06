@@ -51,10 +51,10 @@ import net.java.sezpoz.impl.SerAnnotatedElement;
  * Represents an index of a single annotation.
  * Indices are <em>not</em> automatically cached
  * (but reading them should be pretty cheap anyway).
- * @param T the type of annotation to load
+ * @param A the type of annotation to load
  * @param I the type of instance which will be created
  */
-public final class Index<T extends Annotation, I> implements Iterable<IndexItem<T,I>> {
+public final class Index<A extends Annotation,I> implements Iterable<IndexItem<A,I>> {
 
     private static final Logger LOGGER = Logger.getLogger(Index.class.getName());
 
@@ -67,7 +67,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
      * @throws IllegalArgumentException if the annotation type is not marked with {@link Indexable}
      *                                  or the instance type is not equal to or a supertype of the annotation's actual {@link Indexable#type}
      */
-    public static <T extends Annotation,I> Index<T,I> load(Class<T> annotation, Class<I> instanceType) throws IllegalArgumentException {
+    public static <A extends Annotation,I> Index<A,I> load(Class<A> annotation, Class<I> instanceType) throws IllegalArgumentException {
         return load(annotation, instanceType, Thread.currentThread().getContextClassLoader());
     }
 
@@ -80,15 +80,15 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
      * @throws IllegalArgumentException if the annotation type is not marked with {@link Indexable}
      *                                  or the instance type is not equal to or a supertype of the annotation's actual {@link Indexable#type}
      */
-    public static <T extends Annotation,I> Index<T,I> load(Class<T> annotation, Class<I> instanceType, ClassLoader loader) throws IllegalArgumentException {
-        return new Index<T,I>(annotation, instanceType, loader);
+    public static <A extends Annotation,I> Index<A,I> load(Class<A> annotation, Class<I> instanceType, ClassLoader loader) throws IllegalArgumentException {
+        return new Index<A,I>(annotation, instanceType, loader);
     }
 
-    private final Class<T> annotation;
+    private final Class<A> annotation;
     private final Class<I> instanceType;
     private final ClassLoader loader;
 
-    private Index(Class<T> annotation, Class<I> instance, ClassLoader loader) {
+    private Index(Class<A> annotation, Class<I> instance, ClassLoader loader) {
         this.annotation = annotation;
         this.instanceType = instance;
         this.loader = loader;
@@ -100,19 +100,19 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
      * as the index is parsed lazily.
      * @return an iterator over items in the index
      */
-    public Iterator<IndexItem<T,I>> iterator() {
+    public Iterator<IndexItem<A,I>> iterator() {
         return new LazyIndexIterator();
     }
 
     /**
      * Lazy iterator. Opens and parses annotation streams only on demand.
      */
-    private final class LazyIndexIterator implements Iterator<IndexItem<T,I>> {
+    private final class LazyIndexIterator implements Iterator<IndexItem<A,I>> {
 
         private Enumeration<URL> resources;
         private ObjectInputStream ois;
         private URL resource;
-        private IndexItem<T,I> next;
+        private IndexItem<A,I> next;
         private boolean end;
         private final Set<String> loadedMembers = new HashSet<String>();
 
@@ -166,7 +166,7 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
                         continue;
                     }
                     // XXX JRE #6865375 would make loader param accurate for duplicated modules
-                    next = new IndexItem<T,I>(el, annotation, instanceType, loader, resource);
+                    next = new IndexItem<A,I>(el, annotation, instanceType, loader, resource);
                     break;
                 }
             } catch (Exception x) {
@@ -186,11 +186,11 @@ public final class Index<T extends Annotation, I> implements Iterable<IndexItem<
             return !end;
         }
 
-        public IndexItem<T,I> next() {
+        public IndexItem<A,I> next() {
             peek();
             if (!end) {
                 assert next != null;
-                IndexItem<T,I> _next = next;
+                IndexItem<A,I> _next = next;
                 next = null;
                 return _next;
             } else {
