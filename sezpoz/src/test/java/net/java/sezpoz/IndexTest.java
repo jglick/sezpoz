@@ -136,9 +136,9 @@ public class IndexTest {
         String stuff();
     }
     @Marker(stuff="hello")
-    private static class Marked1 {}
+    public static class Marked1 {}
     @Marker(stuff="goodbye")
-    private static class Marked2 {}
+    public static class Marked2 {}
     @Test public void staticallyKnownAnnotation() throws Exception {
         TestUtils.makeSource(src, "impl.C",
                 "import " + Marker.class.getName().replace('$', '.') + ";",
