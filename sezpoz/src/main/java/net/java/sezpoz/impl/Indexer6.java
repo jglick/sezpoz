@@ -134,7 +134,9 @@ public class Indexer6 extends AbstractProcessor {
                         break;
                     }
                 }
-                assert marked != null;
+                if (marked == null) {
+                    continue;
+                }
                 String error = verify(elt, indexable);
                 if (error != null) {
                     processingEnv.getMessager().printMessage(Kind.ERROR, error, elt, marked);
