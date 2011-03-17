@@ -9,7 +9,7 @@
     <groupId>net.java.sezpoz</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.9</version>
+    <version>1.10-SNAPSHOT</version>
     <name>SezPoz</name>
     <url>http://sezpoz.java.net/</url>
     <description>SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.</description>
@@ -21,9 +21,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:svn:http://svn.java.net/svn/sezpoz~svn/tags/pom-1.9</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/sezpoz~svn/tags/pom-1.9</developerConnection>
-        <url>http://java.net/projects/sezpoz/sources/svn/show/tags/pom-1.9</url>
+        <connection>scm:svn:http://svn.java.net/svn/sezpoz~svn/trunk/</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/sezpoz~svn/trunk/</developerConnection>
+        <url>http://java.net/projects/sezpoz/sources/svn/show/trunk/</url>
     </scm>
     <issueManagement>
         <system>JIRA</system>
