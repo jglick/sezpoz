@@ -21,7 +21,8 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/sezpoz~svn/trunk/</connection>
+        <connection>scm:svn:http://svn.java.net/svn/sezpoz~svn/trunk/</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/sezpoz~svn/trunk/</developerConnection>
         <url>http://java.net/projects/sezpoz/sources/svn/show/trunk/</url>
     </scm>
     <issueManagement>
