@@ -54,22 +54,14 @@ To try the demo application:
 mvn -f demo/app/pom.xml exec:exec
 </pre>
 <p>
-Binaries, sources, and Javadoc can all be downloaded from the
-<a href="http://download.java.net/maven/2/net/java/sezpoz/sezpoz/">Maven repository</a>.
+Binaries, sources, and Javadoc can all be downloaded from the Maven Central repository:
+<a href="http://repo1.maven.org/maven2/net/java/sezpoz/sezpoz/">Maven repository</a>.
 </p>
 <p>
-For usage from Maven applications, add the java.net repository
-(<a href="https://maven2-repository.dev.java.net/">details</a>)
-and use the artifact <code>net.java.sezpoz:sezpoz</code>, for example:
+For usage from Maven applications,
+use the artifact <code>net.java.sezpoz:sezpoz</code>, for example:
 </p>
 <pre>
-&lt;repositories>
-  &lt;repository>
-    &lt;id>java.net&lt;/id>
-    &lt;name>java.net&lt;/name>
-    &lt;url>http://download.java.net/maven/2/&lt;/url>
-  &lt;/repository>
-&lt;/repositories>
 &lt;dependencies>
   &lt;dependency>
     &lt;groupId>net.java.sezpoz&lt;/groupId>
@@ -81,8 +73,8 @@ and use the artifact <code>net.java.sezpoz:sezpoz</code>, for example:
 
 <h1>Usage Summary</h1>
 <p>
-See Javadoc for details on particular classes, or just look at
-<a href="http://download.java.net/maven/2/net/java/sezpoz/demo/">demo sources</a>.
+See Javadoc for details on particular classes, or just look at demo sources in the
+<code>demo</code> subdirectory in Subversion.
 <p>
 
 Support for declaring, creating, and inspecting indices of annotated Java elements.
