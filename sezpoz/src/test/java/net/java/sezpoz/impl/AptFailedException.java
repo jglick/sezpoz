@@ -15,8 +15,8 @@
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
  * The Original Software is SezPoz. The Initial Developer of the Original
- * Software is Sun Microsystems, Inc. Portions Copyright 2006-2010 Sun
- * Microsystems, Inc. All Rights Reserved.
+ * Software is Sun Microsystems, Inc. Copyright 2006-2011 Oracle
+ * Corporation. All Rights Reserved.
  *
  * If you wish your version of this file to be governed by only the CDDL
  * or only the GPL Version 2, indicate your decision by adding
