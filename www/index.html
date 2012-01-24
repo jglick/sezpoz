@@ -170,9 +170,15 @@ Eclipse users are recommended to use javac (e.g. via Maven) to build.
 <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=280542">Eclipse bug #280542</a>
 </p>
 
+<h1>Related</h1>
+
+<p>SezPoz is used inside Hudson/Jenkins for the <code>@Extension</code> annotation, but this usage does not take advantage of its lazy-loading capability at all.</p>
+
+<p><a href="https://wikis.oracle.com/display/GlassFish/DependencyMechanism">GlassFish/DependencyMechanism</a> looks a bit similar. In active use?</p>
+
+<p><a href="http://jpf.sourceforge.net/">JPF</a> is similar to Eclipse, but can be used in isolation.</p>
+
+<p>To be investigated: interoperability with Peaberry and/or Sisu.</p>
+
 </body>
 </html>
-<!-- perhaps mention: http://wiki.glassfish.java.net/Wiki.jsp?page=DependencyMechanism -->
-<!-- similar to Eclipse: http://jpf.sourceforge.net/ -->
-<!-- can mention that Hudson now uses it -->
-<!-- investigate interoperability with Peaberry and/or Sisu -->
