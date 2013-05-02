@@ -96,7 +96,7 @@ public final class IndexItem<A extends Annotation,I> {
      * @return a live or proxy annotation
      */
     public A annotation() {
-        return proxy(annotationType, structure.values);
+        return proxy(loader, annotationType, structure.values);
     }
 
     /**
@@ -215,10 +215,10 @@ public final class IndexItem<A extends Annotation,I> {
         return "@" + annotationType.getName() + ":" + structure;
     }
 
-    private static <T extends Annotation> T proxy(Class<T> type, Map<String,Object> data) {
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+    private static <T extends Annotation> T proxy(ClassLoader loader, Class<T> type, Map<String,Object> data) {
+        return type.cast(Proxy.newProxyInstance(loader,
                 new Class<?>[] {type},
-                new AnnotationProxy(type, data)));
+                new AnnotationProxy(loader, type, data)));
     }
 
     /**
@@ -226,12 +226,15 @@ public final class IndexItem<A extends Annotation,I> {
      */
     private static final class AnnotationProxy implements InvocationHandler {
 
+        /** class loader to use */
+        private final ClassLoader loader;
         /** type of the annotation */
         private final Class<? extends Annotation> type;
         /** (non-default) annotation method values; value may be wrapped in Ser*Const objects or ArrayList */
         private final Map<String,Object> data;
 
-        public AnnotationProxy(Class<? extends Annotation> type, Map<String,Object> data) {
+        public AnnotationProxy(ClassLoader loader, Class<? extends Annotation> type, Map<String,Object> data) {
+            this.loader = loader;
             this.type = type;
             this.data = data;
         }
@@ -322,12 +325,12 @@ public final class IndexItem<A extends Annotation,I> {
         private Object evaluate(Object o, Class<?> expectedType) throws Exception {
             if (o instanceof SerAnnConst) {
                 SerAnnConst a = (SerAnnConst) o;
-                return proxy(type.getClassLoader().loadClass(a.name).asSubclass(Annotation.class), a.values);
+                return proxy(loader, loader.loadClass(a.name).asSubclass(Annotation.class), a.values);
             } else if (o instanceof SerTypeConst) {
-                return type.getClassLoader().loadClass(((SerTypeConst) o).name);
+                return loader.loadClass(((SerTypeConst) o).name);
             } else if (o instanceof SerEnumConst) {
                 SerEnumConst e = (SerEnumConst) o;
-                return type.getClassLoader().loadClass(e.enumName).getField(e.constName).get(null);
+                return loader.loadClass(e.enumName).getField(e.constName).get(null);
             } else if (o instanceof ArrayList<?>) {
                 List<?> l = (List<?>) o;
                 Class<?> compType = expectedType.getComponentType();
