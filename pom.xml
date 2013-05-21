@@ -11,24 +11,20 @@
     <packaging>pom</packaging>
     <version>1.10-SNAPSHOT</version>
     <name>SezPoz</name>
-    <url>http://sezpoz.java.net/</url>
+    <url>https://github.com/jglick/sezpoz</url>
     <description>SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.</description>
     <developers>
         <developer>
-            <email>jesse.glick@oracle.com</email>
+            <email>jglick@cloudbees.com</email>
             <name>Jesse Glick</name>
             <id>jglick</id>
         </developer>
     </developers>
     <scm>
-        <connection>scm:svn:http://svn.java.net/svn/sezpoz~svn/trunk/</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/sezpoz~svn/trunk/</developerConnection>
-        <url>http://java.net/projects/sezpoz/sources/svn/show/trunk/</url>
+        <connection>scm:git:git@github.com:jglick/sezpoz.git</connection>
+        <developerConnection>scm:git:git@github.com:jglick/sezpoz.git</developerConnection>
+        <url>git@github.com:jglick/sezpoz.git</url>
     </scm>
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://java.net/jira/browse/SEZPOZ</url>
-    </issueManagement>
     <licenses>
         <license>
             <name>CDDL or GPL 2 with Classpath Exception</name>
