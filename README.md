@@ -70,7 +70,7 @@ To create the index on JDK 6, just compile your sources normally with javac. If 
 
 Usage is then simple:
 
-    for (final IndexItem item :
+    for (final IndexItem<MenuItem,ActionListener> item :
             Index.load(MenuItem.class, ActionListener.class)) {
         JMenu menu = new JMenu(item.annotation().menuName());
         JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
