@@ -1,6 +1,6 @@
 SezPoz is a lightweight and easy-to-learn library that lets you perform modular service lookups. It provides some of the same capabilities as (for example) `java.util.ServiceLoader`, Eclipse extension points, and NetBeans `Lookup` and XML layers. However, SezPoz has some special advantages:
 
-1.  The service registrations are made just using type-checked Java annotations. There are no configuration files to edit, and your Java IDE can show you registrations since they are simply usages of an annotation. On JDK 6 (or later), no special build or packaging steps are required (just javac); on JDK 5, you just need to run APT (with default arguments), instead of or in addition to javac for any sources which may contain indexable items. Looking up services just requires that you have a `ClassLoader` which can "see" all of the "modules" (as with `ServiceLoader`).
+1.  The service registrations are made just using type-checked Java annotations. There are no configuration files to edit, and your Java IDE can show you registrations since they are simply usages of an annotation. On JDK 6 (or later), no special build or packaging steps are required (just javac). Looking up services just requires that you have a `ClassLoader` which can "see" all of the "modules" (as with `ServiceLoader`).
 
 2.  You can register individual objects (values of static fields or methods) instead of whole classes.
 
@@ -12,11 +12,9 @@ Sources are in the form of Maven projects. To build:
 
     mvn install
 
-
 To try the demo application:
 
     mvn -f demo/app/pom.xml exec:exec
-
 
 Binaries, sources, and Javadoc can all be downloaded from the Maven Central repository: [Maven repository][3].
 
@@ -66,7 +64,7 @@ or even:
         public static final Action PRINT = ...;
     }
 
-To create the index on JDK 6, just compile your sources normally with javac. If using JDK 5, simply run apt instead of/in addition to javac. (The processor is in the same JAR as this API and should be autodetected.)
+To create the index on JDK 6+, just compile your sources normally with javac. (The processor is in the same JAR as this API and should be autodetected.)
 
 Usage is then simple:
 
@@ -92,11 +90,9 @@ Usage is then simple:
 
 Known limitations:
 
-1.  When using JDK 5 and apt, incremental compilation can result in an index file being generated with only some of the desired entries, if other source files are omitted e.g. by Ant.
+1. Incremental compilation is not perfect. If you compile just some sources which are marked with an indexable annotation, these entries will be appended to any existing registrations from previous runs of the compiler. (You should run a clean build if you *delete* annotations from sources.)
 
-    This scenario works better using JDK 6's javac: if you compile just some sources which are marked with an indexable annotation, these entries will be appended to any existing registrations from previous runs of the compiler. (You should run a clean build if you *delete* annotations from sources.)
-
-2.  The Java language spec currently prohibits recursive annotation definitions, although javac in JDK 5 does not. (JDK 6 and 7's javac do.) See [bug #6264216][4].
+2.  The Java language spec currently prohibits recursive annotation definitions, and JDK 6 and 7's javac enforce this. See [bug #6264216][4].
 
 Eclipse-specific notes: make sure annotation processing is enabled at least for any projects registering objects using annotations. Make sure the SezPoz library is in the factory path for annotation processors. You also need to check the box **Run this container's processor in batch mode** from the **Advanced** button in **Java Compiler » Annotation Processing » Factory Path**. There does not appear to be any way for Eclipse to discover processors in the regular classpath as JSR 269 suggests, and there does not appear to be any way to make these settings apply automatically to all projects. Eclipse users are recommended to use javac (e.g. via Maven) to build. [Eclipse Help Page][5] [Eclipse bug #280542][6]
 

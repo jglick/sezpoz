@@ -93,20 +93,18 @@ public class TestUtils {
     }
 
     /**
-     * Run the apt tool.
+     * Run annotation processing.
      * @param src a source root (runs apt on all *.java it finds)
      * @param srcIncludes optional regex to limit class names to compile
      * @param dest a dest dir (also compiles classes there)
      * @param cp classpath entries for processor (Indexable will always be accessible), or null
      * @param stderr output stream to use, or null for test console
-     * @param jsr199 whether to use JSR 199 (i.e. JDK 6 javac) annotation processing
-     * @throws AptFailedException if processing failed
      * @throws Exception if something unexpected went wrong
      */
-    public static void runApt(File src, String srcIncludes, File dest, File[] cp, OutputStream stderr, boolean jsr199) throws Exception {
+    public static void runApt(File src, String srcIncludes, File dest, File[] cp, OutputStream stderr) throws Exception {
         List<String> args = new ArrayList<String>();
         String indexableLoc = new File(URI.create(Indexable.class.getProtectionDomain().getCodeSource().getLocation().toExternalForm())).getAbsolutePath();
-        args.add(jsr199 ? "-processorpath" : "-factorypath");
+        args.add("-processorpath");
         args.add(indexableLoc);
         args.add("-classpath");
         StringBuffer b = new StringBuffer(indexableLoc);
@@ -122,18 +120,9 @@ public class TestUtils {
         dest.mkdirs();
         args.add("-Asezpoz.quiet=true");
         scan(args, src, srcIncludes);
-        if (!jsr199) {
-            args.add("-proc:none");
-        }
         //System.err.println("running apt with args: " + args);
         String[] argsA = args.toArray(new String[args.size()]);
-        int res;
-        if (jsr199) {
-            res = ToolProvider.getSystemJavaCompiler().run(null, null, stderr, argsA);
-            //res = com.sun.tools.javac.Main.compile(argsA, stderr);
-        } else {
-            res = com.sun.tools.apt.Main.process(new PrintWriter(stderr != null ? stderr : System.err), argsA);
-        }
+        int res = ToolProvider.getSystemJavaCompiler().run(null, null, stderr, argsA);
         if (res != 0) {
             throw new AptFailedException(res);
         }
@@ -149,19 +138,18 @@ public class TestUtils {
     }
 
     /**
-     * Run the apt tool and expect an error to be issued.
+     * Run annotation processing and expect an error to be issued.
      * @param src a source root (runs apt on all *.java it finds)
      * @param srcIncludes optional regex to limit class names to compile
      * @param dest a dest dir (also compiles classes there)
      * @param cp classpath entries for processor (Indexable will always be accessible), or null
      * @param error an error you expect to see printed (APT must also fail), else assertion failure
-     * @param jsr199 whether to use JSR 199 (i.e. JDK 6 javac) annotation processing
      * @throws Exception if something unexpected went wrong
      */
-    public static void runAptExpectingErrors(File src, String srcIncludes, File dest, File[] cp, String error, boolean jsr199) throws Exception {
+    public static void runAptExpectingErrors(File src, String srcIncludes, File dest, File[] cp, String error) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            runApt(src, srcIncludes, dest, cp, baos, jsr199);
+            runApt(src, srcIncludes, dest, cp, baos);
             Assert.fail("annotation processing should have failed");
         } catch (AptFailedException x) {
             String log = baos.toString();

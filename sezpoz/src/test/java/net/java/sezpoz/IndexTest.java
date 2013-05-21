@@ -91,7 +91,7 @@ public class IndexTest {
                 "public class PrintAction extends javax.swing.AbstractAction {",
                 "public void actionPerformed(java.awt.event.ActionEvent e) {}",
                 "}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         Class menuItemClazz = loader.loadClass("api.MenuItem");
         Index index = Index.load(menuItemClazz, Action.class, loader);
         Iterator<IndexItem> it = index.iterator();
@@ -146,7 +146,7 @@ public class IndexTest {
                 "public class C {}");
         TestUtils.runApt(src, null, clz, new File[] {
             new File(URI.create(Marker.class.getProtectionDomain().getCodeSource().getLocation().toExternalForm()))
-        }, null, false);
+        }, null);
         int cnt = 0;
         for (IndexItem<Marker,Object> item : Index.load(Marker.class, Object.class, loader)) {
             cnt++;
@@ -179,7 +179,7 @@ public class IndexTest {
                 "@x.A",
                 "public static Object m() {return 2;}",
                 "}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         int cnt = 0;
         for (IndexItem item : Index.load(a, Object.class, loader)) {
@@ -206,14 +206,14 @@ public class IndexTest {
         TestUtils.makeSource(src, "y.C1",
                 "@x.A",
                 "public class C1 {}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         File src2 = new File(dir, "src2");
         TestUtils.makeSource(src2, "z.C2",
                 "@x.A",
                 "public class C2 {}");
         File clz2 = new File(dir, "clz2");
         clz2.mkdirs();
-        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null, false);
+        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         Iterator it = Index.load(a, Object.class, loader).iterator();
@@ -241,14 +241,14 @@ public class IndexTest {
         TestUtils.makeSource(src, "y.C1",
                 "@x.A(x=1)",
                 "public class C1 {}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         File src2 = new File(dir, "src2");
         TestUtils.makeSource(src2, "y.C1",
                 "@x.A(x=2)",
                 "public class C1 {}");
         File clz2 = new File(dir, "clz2");
         clz2.mkdirs();
-        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null, false);
+        TestUtils.runApt(src2, null, clz2, new File[] {clz}, null);
         loader = new URLClassLoader(new URL[] {clz.toURI().toURL(), clz2.toURI().toURL()});
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         Iterator it = Index.load(a, Object.class, loader).iterator();
@@ -274,7 +274,7 @@ public class IndexTest {
         TestUtils.makeSource(src, "y.C1",
                 "@x.A(x=1)",
                 "public class C1 {}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         URL[] urls = new URL[9]; // too slow to make this really big
         for (int i = 0; i < urls.length; i++) {
             urls[i] = new URL(new URL("http://" + i + ".nowhere.net/"), "", new URLStreamHandler() {
@@ -311,13 +311,13 @@ public class IndexTest {
                 "import x.A;",
                 "public class C {",
                 "@A",
-                "public static void m1() {}",
+                "public static Void m1() {return null;}",
                 "@A(x=5)",
-                "public static void m2() {}",
+                "public static Void m2() {return null;}",
                 "@A(x=17)",
-                "public static void m3() {}",
+                "public static Void m3() {return null;}",
                 "}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         int cnt = 0;
         Annotation[] proxyAnns = new Annotation[3];
@@ -395,7 +395,7 @@ public class IndexTest {
                 "c=A.Nested.class",
                 ")",
                 "public class C {}");
-        TestUtils.runApt(src, null, clz, new File[0], null, false);
+        TestUtils.runApt(src, null, clz, new File[0], null);
         Class<? extends Annotation> a = loader.loadClass("x.A").asSubclass(Annotation.class);
         IndexItem item = Index.load(a, Object.class, loader).iterator().next();
         Class<?> b = loader.loadClass("x.B");
