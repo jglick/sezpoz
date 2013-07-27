@@ -190,7 +190,13 @@ public class Indexer6 extends AbstractProcessor {
                 } catch (FileNotFoundException x) {
                     // OK, created for the first time
                 } catch (IOException x) {
-                    // OK, created for the first time
+                    String filerClassname = processingEnv.getFiler().getClass().getCanonicalName();
+                    if( filerClassname.startsWith("org.eclipse.")) { // if eclipse
+                        //    OK, created for the first time
+                    } else {
+                        // rethrow
+                        throw x;
+                    }
                 }
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
                         "", "META-INF/annotations/" + annName,
@@ -207,7 +213,9 @@ public class Indexer6 extends AbstractProcessor {
                     os.close();
                 }
             } catch (IOException x) {
-                x.printStackTrace();
+                for( Element element : originatingElementsByAnn.get(annName) ) {
+                    processingEnv.getMessager().printMessage(Kind.ERROR, x.toString(), element );
+                }
                 processingEnv.getMessager().printMessage(Kind.ERROR, x.toString());
             }
         }
