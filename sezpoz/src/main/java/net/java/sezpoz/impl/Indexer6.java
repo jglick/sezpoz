@@ -87,6 +87,7 @@ public class Indexer6 extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
+            // TODO we should not write until processingOver
             return false;
         }
         for (Element indexable : roundEnv.getElementsAnnotatedWith(Indexable.class)) {
