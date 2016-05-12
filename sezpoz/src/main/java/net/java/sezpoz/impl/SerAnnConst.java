@@ -44,7 +44,7 @@ public final class SerAnnConst implements Serializable {
 
     /** fully qualified name of annotation type */
     public final String name;
-    /** values of annotation attrs, as in {@link #SerAnnotatedElement} */
+    /** values of annotation attrs, as in {@link SerAnnotatedElement} */
     public final TreeMap<String,Object> values;
 
     SerAnnConst(String name, TreeMap<String,Object> values) {
