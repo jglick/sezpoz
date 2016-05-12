@@ -69,12 +69,10 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import net.java.sezpoz.Indexable;
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 /**
  * Processor for indexable annotations.
  */
-@IgnoreJRERequirement
 @SupportedAnnotationTypes("*")
 @SupportedOptions("sezpoz.quiet")
 public class Indexer6 extends AbstractProcessor {

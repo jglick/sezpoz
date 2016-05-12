@@ -17,11 +17,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-annotations</artifactId>
-            <version>1.15</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
