@@ -54,7 +54,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -76,7 +75,6 @@ import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
  * Processor for indexable annotations.
  */
 @IgnoreJRERequirement
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes("*")
 @SupportedOptions("sezpoz.quiet")
 public class Indexer6 extends AbstractProcessor {
@@ -107,6 +105,11 @@ public class Indexer6 extends AbstractProcessor {
         scan(annotations, originatingElementsByAnn, roundEnv, output);
         write(output, originatingElementsByAnn);
         return false;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
     }
 
     private void scan(Set<? extends TypeElement> annotations, Map<String,Collection<Element>> originatingElementsByAnn,
