@@ -43,9 +43,19 @@ public class Inspector {
                             System.out.println("# " + annotation);
                             is = jf.getInputStream(entry);
                             try {
-                                dump(is);
+                                is.read(magic, 0, 4);
                             } finally {
                                 is.close();
+                            }
+                            if ((Arrays.equals(magic, SER_MAGIC))) {
+                                is = jf.getInputStream(entry);
+                                try {
+                                    dump(is);
+                                } finally {
+                                    is.close();
+                                }
+                            } else {
+                                System.err.println("does not look like a Java serialized file");
                             }
                         }
                     }
