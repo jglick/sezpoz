@@ -164,11 +164,11 @@ public class IndexerTest {
         Map<String,List<String>> expected = new HashMap<String,List<String>>();
         expected.put("x.A", Arrays.asList(
             "y.C1{i=33}",
-            "y.C2{}",
-            "y.C3{}"
+            "y.C2",
+            "y.C3"
         ));
         expected.put("x.B", Arrays.asList(
-            "y.C4{}",
+            "y.C4",
             "y.C5{as=[@x.A{}, @x.A{}, @x.A{i=20}]}"
         ));
         assertEquals(expected, TestUtils.findMetadata(clz));

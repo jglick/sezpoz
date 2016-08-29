@@ -76,7 +76,7 @@ public final class SerAnnotatedElement implements Serializable, Comparable<SerAn
     }
 
     public String toString() {
-        return key() + values;
+        return values.isEmpty() ? key() : key() + values;
     }
 
     /**
