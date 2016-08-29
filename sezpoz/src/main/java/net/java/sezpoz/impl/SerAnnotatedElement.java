@@ -76,12 +76,13 @@ public final class SerAnnotatedElement implements Serializable, Comparable<SerAn
     }
 
     public String toString() {
-        StringBuffer b = key();
-        b.append(values);
-        return b.toString();
+        return key() + values;
     }
 
-    private StringBuffer key() {
+    /**
+     * Key based on the annotated element, ignoring annotation values.
+     */
+    public String key() {
         StringBuffer b = new StringBuffer(className);
         if (memberName != null) {
             b.append('#');
@@ -90,11 +91,11 @@ public final class SerAnnotatedElement implements Serializable, Comparable<SerAn
                 b.append("()");
             }
         }
-        return b;
+        return b.toString();
     }
 
     @Override public int compareTo(SerAnnotatedElement o) {
-        return key().toString().compareTo(o.key().toString());
+        return key().compareTo(o.key());
     }
 
 }

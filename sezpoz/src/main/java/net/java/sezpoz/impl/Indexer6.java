@@ -45,7 +45,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +98,7 @@ public class Indexer6 extends AbstractProcessor {
             }
         }
         // map from indexable annotation names, to actual uses
-        Map<String,List<SerAnnotatedElement>> output = new HashMap<String,List<SerAnnotatedElement>>();
+        Map<String,Map<String,SerAnnotatedElement>> output = new HashMap<String,Map<String,SerAnnotatedElement>>();
         Map<String,Collection<Element>> originatingElementsByAnn = new HashMap<String,Collection<Element>>();
         scan(annotations, originatingElementsByAnn, roundEnv, output);
         write(output, originatingElementsByAnn);
@@ -112,7 +111,7 @@ public class Indexer6 extends AbstractProcessor {
     }
 
     private void scan(Set<? extends TypeElement> annotations, Map<String,Collection<Element>> originatingElementsByAnn,
-            RoundEnvironment roundEnv, Map<String,List<SerAnnotatedElement>> output) {
+            RoundEnvironment roundEnv, Map<String,Map<String,SerAnnotatedElement>> output) {
         for (TypeElement ann : annotations) {
             AnnotationMirror indexable = null;
             for (AnnotationMirror _indexable : processingEnv.getElementUtils().getAllAnnotationMirrors(ann)) {
@@ -148,9 +147,9 @@ public class Indexer6 extends AbstractProcessor {
                     continue;
                 }
                 originatingElements.add(elt);
-                List<SerAnnotatedElement> existingOutput = output.get(annName);
+                Map<String,SerAnnotatedElement> existingOutput = output.get(annName);
                 if (existingOutput == null) {
-                    existingOutput = new ArrayList<SerAnnotatedElement>();
+                    existingOutput = new TreeMap<String,SerAnnotatedElement>();
                     output.put(annName, existingOutput);
                 }
                 SerAnnotatedElement ser = makeSerAnnotatedElement(elt, ann);
@@ -159,16 +158,16 @@ public class Indexer6 extends AbstractProcessor {
                             (ser.memberName != null ? "." + ser.memberName : "") +
                             " indexed under " + annName.replace('$', '.'));
                 }
-                existingOutput.add(ser);
+                existingOutput.put(ser.key(), ser);
             }
         }
     }
 
-    private void write(Map<String,List<SerAnnotatedElement>> output, Map<String,Collection<Element>> originatingElementsByAnn) {
-        for (Map.Entry<String,List<SerAnnotatedElement>> outputEntry : output.entrySet()) {
+    private void write(Map<String,Map<String,SerAnnotatedElement>> output, Map<String,Collection<Element>> originatingElementsByAnn) {
+        for (Map.Entry<String,Map<String,SerAnnotatedElement>> outputEntry : output.entrySet()) {
             String annName = outputEntry.getKey();
             try {
-                List<SerAnnotatedElement> elements = outputEntry.getValue();
+                Map<String,SerAnnotatedElement> elements = outputEntry.getValue();
                 try {
                     FileObject in = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/annotations/" + annName);
                     // Read existing annotations, for incremental compilation.
@@ -185,7 +184,9 @@ public class Indexer6 extends AbstractProcessor {
                             if (el == null) {
                                 break;
                             }
-                            elements.add(el);
+                            if (!elements.containsKey(el.key())) {
+                                elements.put(el.key(), el);
+                            }
                         }
                     } finally {
                         is.close();
@@ -193,14 +194,13 @@ public class Indexer6 extends AbstractProcessor {
                 } catch (FileNotFoundException x) {
                     // OK, created for the first time
                 }
-                Collections.sort(elements);
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
                         "", "META-INF/annotations/" + annName,
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));
                 OutputStream os = out.openOutputStream();
                 try {
                     ObjectOutputStream oos = new ObjectOutputStream(os);
-                    for (SerAnnotatedElement el : elements) {
+                    for (SerAnnotatedElement el : elements.values()) {
                         oos.writeObject(el);
                     }
                     oos.writeObject(null);

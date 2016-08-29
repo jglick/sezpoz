@@ -73,6 +73,14 @@ public class Indexer6Test extends IndexerTestBase {
                 "Impl1{name=one}",
                 "Impl2{name=two}"
                 )), TestUtils.findMetadata(clz2));
+        TestUtils.makeSource(src2, "Impl2",
+                "@Thing(name=\"Two\")",
+                "public class Impl2 {}");
+        TestUtils.runApt(src2, null, clz2, new File[] {clz1}, null);
+        assertEquals(Collections.singletonMap("Thing", Arrays.asList(
+                "Impl1{name=one}",
+                "Impl2{name=Two}"
+                )), TestUtils.findMetadata(clz2));
     }
 
     // XXX the following should be moved to IndexerTestBase when Indexer5 implements these things:
