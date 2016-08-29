@@ -37,9 +37,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +76,7 @@ public class IndexerTest {
                 "}");
         File clz2 = new File(dir, "clz2");
         TestUtils.runApt(src2, null, clz2, new File[] {clz1}, null);
-        assertEquals(Collections.singletonMap("api.MenuItem", Collections.singleton(
+        assertEquals(Collections.singletonMap("api.MenuItem", Collections.singletonList(
                 "impl.PrintAction{iconPath=.../print.png, itemName=Print, menuName=File}"
                 )), TestUtils.findMetadata(clz2));
     }
@@ -95,7 +94,7 @@ public class IndexerTest {
                 "@x.A(x=\"foo\\\\\\\"\\n\")",
                 "public class C {}");
         TestUtils.runApt(src, null, clz, null, null);
-        assertEquals(Collections.singletonMap("x.A", Collections.singleton(
+        assertEquals(Collections.singletonMap("x.A", Collections.singletonList(
                 "y.C{x=foo\\\"\n}"
                 )), TestUtils.findMetadata(clz));
     }
@@ -123,7 +122,7 @@ public class IndexerTest {
                 "@A(other=@Other(v=1),others=@Other(v=2),i=3,b=true,c='x')",
                 "public class C {}");
         TestUtils.runApt(src, null, clz, null, null);
-        assertEquals(Collections.singletonMap("x.A", Collections.singleton(
+        assertEquals(Collections.singletonMap("x.A", Collections.singletonList(
                 "y.C{b=true, c=x, i=3, other=@x.Other{v=1}, others=[@x.Other{v=2}]}"
                 )), TestUtils.findMetadata(clz));
     }
@@ -162,16 +161,16 @@ public class IndexerTest {
                 "@B(as={@A, @A(), @A(i=20)})",
                 "public class C5 {}");
         TestUtils.runApt(src, null, clz, null, null);
-        Map<String,Set<String>> expected = new HashMap<String,Set<String>>();
-        expected.put("x.A", new TreeSet<String>(Arrays.asList(new String[] {
+        Map<String,List<String>> expected = new HashMap<String,List<String>>();
+        expected.put("x.A", Arrays.asList(
             "y.C1{i=33}",
             "y.C2{}",
-            "y.C3{}",
-        })));
-        expected.put("x.B", new TreeSet<String>(Arrays.asList(new String[] {
+            "y.C3{}"
+        ));
+        expected.put("x.B", Arrays.asList(
             "y.C4{}",
             "y.C5{as=[@x.A{}, @x.A{}, @x.A{i=20}]}"
-        })));
+        ));
         assertEquals(expected, TestUtils.findMetadata(clz));
     }
 
@@ -192,7 +191,7 @@ public class IndexerTest {
                 "@A(clazz=String.class,enoom={E.ONE,E.TWO})",
                 "public class C {}");
         TestUtils.runApt(src, null, clz, null, null);
-        assertEquals(Collections.singletonMap("x.A", Collections.singleton(
+        assertEquals(Collections.singletonMap("x.A", Collections.singletonList(
                 "y.C{clazz=java.lang.String, enoom=[ONE, TWO]}"
                 )), TestUtils.findMetadata(clz));
     }
@@ -215,10 +214,10 @@ public class IndexerTest {
                 "public static Object m() {return null;}",
                 "}");
         TestUtils.runApt(src, null, clz, null, null);
-        assertEquals(Collections.singletonMap("x.A", new TreeSet<String>(Arrays.asList(new String[] {
+        assertEquals(Collections.singletonMap("x.A", Arrays.asList(
                 "y.C#F{b=true}",
-                "y.C#m(){b=false}",
-        }))), TestUtils.findMetadata(clz));
+                "y.C#m(){b=false}"
+        )), TestUtils.findMetadata(clz));
     }
 
     @Test public void nestedClasses() throws Exception {
@@ -239,7 +238,7 @@ public class IndexerTest {
                 "public static class C {}",
                 "}");
         TestUtils.runApt(src, null, clz, null, null);
-        assertEquals(Collections.singletonMap("x.Outer$A", Collections.singleton(
+        assertEquals(Collections.singletonMap("x.Outer$A", Collections.singletonList(
                 "y.Auter$C{type=y.Auter$T}"
                 )), TestUtils.findMetadata(clz));
     }
