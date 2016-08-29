@@ -193,6 +193,9 @@ public class TestUtils {
         }
         Map<String,List<String>> metadata = new HashMap<String,List<String>>();
         for (String kid : dir.list()) {
+            if (kid.endsWith(".txt")) {
+                continue;
+            }
             File f = new File(dir, kid);
             InputStream is = new FileInputStream(f);
             try {

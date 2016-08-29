@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -77,6 +78,8 @@ import net.java.sezpoz.Indexable;
 @SupportedOptions("sezpoz.quiet")
 public class Indexer6 extends AbstractProcessor {
 
+    public static final String METAINF_ANNOTATIONS = "META-INF/annotations/";
+
     /** public for ServiceLoader */
     public Indexer6() {}
 
@@ -98,7 +101,7 @@ public class Indexer6 extends AbstractProcessor {
             }
         }
         // map from indexable annotation names, to actual uses
-        Map<String,Map<String,SerAnnotatedElement>> output = new HashMap<String,Map<String,SerAnnotatedElement>>();
+        Map<String,Map<String,SerAnnotatedElement>> output = new TreeMap<String,Map<String,SerAnnotatedElement>>();
         Map<String,Collection<Element>> originatingElementsByAnn = new HashMap<String,Collection<Element>>();
         scan(annotations, originatingElementsByAnn, roundEnv, output);
         write(output, originatingElementsByAnn);
@@ -169,7 +172,7 @@ public class Indexer6 extends AbstractProcessor {
             try {
                 Map<String,SerAnnotatedElement> elements = outputEntry.getValue();
                 try {
-                    FileObject in = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/annotations/" + annName);
+                    FileObject in = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", METAINF_ANNOTATIONS + annName);
                     // Read existing annotations, for incremental compilation.
                     InputStream is = in.openInputStream();
                     try {
@@ -195,7 +198,7 @@ public class Indexer6 extends AbstractProcessor {
                     // OK, created for the first time
                 }
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
-                        "", "META-INF/annotations/" + annName,
+                        "", METAINF_ANNOTATIONS + annName,
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));
                 OutputStream os = out.openOutputStream();
                 try {
@@ -207,6 +210,18 @@ public class Indexer6 extends AbstractProcessor {
                     oos.flush();
                 } finally {
                     os.close();
+                }
+                out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
+                        "", METAINF_ANNOTATIONS + annName + ".txt",
+                        originatingElementsByAnn.get(annName).toArray(new Element[0]));
+                Writer w = out.openWriter();
+                try {
+                    for (SerAnnotatedElement el : elements.values()) {
+                        w.write(el.toString());
+                        w.write('\n');
+                    }
+                } finally {
+                    w.close();
                 }
             } catch (IOException x) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, x.toString());
