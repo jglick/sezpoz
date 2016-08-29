@@ -45,6 +45,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,6 +193,7 @@ public class Indexer6 extends AbstractProcessor {
                 } catch (FileNotFoundException x) {
                     // OK, created for the first time
                 }
+                Collections.sort(elements);
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
                         "", "META-INF/annotations/" + annName,
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));

@@ -184,20 +184,20 @@ public class TestUtils {
     
     /**
      * Find contents of META-INF/annotations/* in a dest dir.
-     * @return map from simple file names to set of SerAnnotatedElement.toString()s
+     * @return map from simple file names to list of {@link SerAnnotatedElement#toString}s
      */
-    public static Map<String,SortedSet<String>> findMetadata(File dest) throws Exception {
+    public static Map<String,List<String>> findMetadata(File dest) throws Exception {
         File dir = new File(new File(dest, "META-INF"), "annotations");
         if (!dir.isDirectory()) {
             return Collections.emptyMap();
         }
-        Map<String,SortedSet<String>> metadata = new HashMap<String,SortedSet<String>>();
+        Map<String,List<String>> metadata = new HashMap<String,List<String>>();
         for (String kid : dir.list()) {
             File f = new File(dir, kid);
             InputStream is = new FileInputStream(f);
             try {
                 ObjectInputStream ois = new ObjectInputStream(is);
-                SortedSet<String> entries = new TreeSet<String>();
+                List<String> entries = new ArrayList<String>();
                 while (true) {
                     SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
                     if (el == null) {

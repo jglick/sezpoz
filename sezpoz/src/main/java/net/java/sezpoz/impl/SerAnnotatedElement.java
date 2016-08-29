@@ -40,7 +40,7 @@ import java.util.TreeMap;
  * One META-INF/annotations/* file is a sequence of serialized SerAnnotatedElement
  * instances, terminated by a null.
  */
-public final class SerAnnotatedElement implements Serializable {
+public final class SerAnnotatedElement implements Serializable, Comparable<SerAnnotatedElement> {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,6 +76,12 @@ public final class SerAnnotatedElement implements Serializable {
     }
 
     public String toString() {
+        StringBuffer b = key();
+        b.append(values);
+        return b.toString();
+    }
+
+    private StringBuffer key() {
         StringBuffer b = new StringBuffer(className);
         if (memberName != null) {
             b.append('#');
@@ -84,8 +90,11 @@ public final class SerAnnotatedElement implements Serializable {
                 b.append("()");
             }
         }
-        b.append(values);
-        return b.toString();
+        return b;
+    }
+
+    @Override public int compareTo(SerAnnotatedElement o) {
+        return key().toString().compareTo(o.key().toString());
     }
 
 }

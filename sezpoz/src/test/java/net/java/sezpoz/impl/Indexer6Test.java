@@ -36,7 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.TreeSet;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -63,17 +62,17 @@ public class Indexer6Test extends IndexerTestBase {
                 "public class Impl1 {}");
         File clz2 = new File(dir, "clz2");
         TestUtils.runApt(src2, null, clz2, new File[] {clz1}, null);
-        assertEquals(Collections.singletonMap("Thing", Collections.singleton(
+        assertEquals(Collections.singletonMap("Thing", Collections.singletonList(
                 "Impl1{name=one}"
                 )), TestUtils.findMetadata(clz2));
         TestUtils.makeSource(src2, "Impl2",
                 "@Thing(name=\"two\")",
                 "public class Impl2 {}");
         TestUtils.runApt(src2, "Impl2", clz2, new File[] {clz1}, null);
-        assertEquals(Collections.singletonMap("Thing", new TreeSet<String>(Arrays.asList(
+        assertEquals(Collections.singletonMap("Thing", Arrays.asList(
                 "Impl1{name=one}",
                 "Impl2{name=two}"
-                ))), TestUtils.findMetadata(clz2));
+                )), TestUtils.findMetadata(clz2));
     }
 
     // XXX the following should be moved to IndexerTestBase when Indexer5 implements these things:
