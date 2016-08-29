@@ -45,7 +45,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.java.sezpoz.impl.Indexer6;
+import net.java.sezpoz.impl.Indexer;
 import net.java.sezpoz.impl.SerAnnotatedElement;
 
 /**
@@ -140,7 +140,7 @@ public final class Index<A extends Annotation,I> implements Iterable<IndexItem<A
                     }
                     if (ois == null) {
                         if (resources == null) {
-                            resources = loader.getResources(Indexer6.METAINF_ANNOTATIONS + annotation.getName());
+                            resources = loader.getResources(Indexer.METAINF_ANNOTATIONS + annotation.getName());
                         }
                         if (!resources.hasMoreElements()) {
                             // Exhausted all streams.

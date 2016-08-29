@@ -76,12 +76,12 @@ import net.java.sezpoz.Indexable;
  */
 @SupportedAnnotationTypes("*")
 @SupportedOptions("sezpoz.quiet")
-public class Indexer6 extends AbstractProcessor {
+public class Indexer extends AbstractProcessor {
 
     public static final String METAINF_ANNOTATIONS = "META-INF/annotations/";
 
     /** public for ServiceLoader */
-    public Indexer6() {}
+    public Indexer() {}
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

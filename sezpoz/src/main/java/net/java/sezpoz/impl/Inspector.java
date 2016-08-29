@@ -35,8 +35,8 @@ public class Inspector {
                     while (entries.hasMoreElements()) {
                         JarEntry entry = entries.nextElement();
                         String name = entry.getName();
-                        if (name.startsWith(Indexer6.METAINF_ANNOTATIONS)) {
-                            String annotation = name.substring(Indexer6.METAINF_ANNOTATIONS.length());
+                        if (name.startsWith(Indexer.METAINF_ANNOTATIONS)) {
+                            String annotation = name.substring(Indexer.METAINF_ANNOTATIONS.length());
                             if (annotation.isEmpty() || annotation.endsWith(".txt")) {
                                 continue;
                             }
