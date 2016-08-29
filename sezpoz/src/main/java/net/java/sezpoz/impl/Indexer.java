@@ -216,6 +216,7 @@ public class Indexer extends AbstractProcessor {
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));
                 Writer w = out.openWriter();
                 try {
+                    w.write("# informational; use java -jar sezpoz.jar to see authoritative contents\n");
                     for (SerAnnotatedElement el : elements.values()) {
                         w.write(el.toString());
                         w.write('\n');
