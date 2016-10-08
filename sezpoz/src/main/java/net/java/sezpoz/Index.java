@@ -37,6 +37,7 @@ import java.io.ObjectInputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -149,7 +150,9 @@ public final class Index<A extends Annotation,I> implements Iterable<IndexItem<A
                         }
                         resource = resources.nextElement();
                         LOGGER.log(Level.FINE, "Loading index from {0}", resource);
-                        ois = new ObjectInputStream(resource.openStream());
+                        URLConnection uc = resource.openConnection();
+                        uc.setUseCaches(false);
+                        ois = new ObjectInputStream(uc.getInputStream());
                     }
                     SerAnnotatedElement el = (SerAnnotatedElement) ois.readObject();
                     if (el == null) {
