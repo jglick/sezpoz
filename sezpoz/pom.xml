@@ -26,6 +26,7 @@
                 <configuration>
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
+                <version>3.7.0</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
