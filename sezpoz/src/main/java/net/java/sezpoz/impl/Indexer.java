@@ -44,6 +44,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -194,7 +195,7 @@ public class Indexer extends AbstractProcessor {
                     } finally {
                         is.close();
                     }
-                } catch (FileNotFoundException x) {
+                } catch (FileNotFoundException|NoSuchFileException x) {
                     // OK, created for the first time
                 }
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
@@ -298,7 +299,6 @@ public class Indexer extends AbstractProcessor {
     /**
      * Checks metadata of a proposed registration.
      * @param registration a class, method, or field
-     * @param annotation an indexable annotation applied to {@code registration}
      * @param indexable {@link Indexable} annotation on that annotation
      * @return an error message, or null if it is valid
      */
