@@ -12,7 +12,7 @@
     <groupId>net.java.sezpoz</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.13</version>
     <name>SezPoz</name>
     <url>https://github.com/jglick/sezpoz</url>
     <description>SezPoz is a lightweight and simple-to-learn library that lets you perform modular service lookups.</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:jglick/sezpoz.git</connection>
         <developerConnection>scm:git:git@github.com:jglick/sezpoz.git</developerConnection>
         <url>git@github.com:jglick/sezpoz.git</url>
-      <tag>HEAD</tag>
+      <tag>pom-1.13</tag>
   </scm>
     <licenses>
         <license>
