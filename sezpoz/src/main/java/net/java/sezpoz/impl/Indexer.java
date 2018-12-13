@@ -175,7 +175,9 @@ public class Indexer extends AbstractProcessor {
                 try {
                     FileObject in = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", METAINF_ANNOTATIONS + annName);
                     // Read existing annotations, for incremental compilation.
-                    try (InputStream is = in.openInputStream(); ObjectInputStream ois = new ObjectInputStream(is)) {
+                    {
+                        InputStream is = in.openInputStream();
+                        ObjectInputStream ois = new ObjectInputStream(is);
                         while (true) {
                             SerAnnotatedElement el;
                             try {
