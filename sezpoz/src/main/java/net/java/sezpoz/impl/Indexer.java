@@ -175,9 +175,7 @@ public class Indexer extends AbstractProcessor {
                 try {
                     FileObject in = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", METAINF_ANNOTATIONS + annName);
                     // Read existing annotations, for incremental compilation.
-                    InputStream is = in.openInputStream();
-                    try {
-                        ObjectInputStream ois = new ObjectInputStream(is);
+                    try (InputStream is = in.openInputStream(); ObjectInputStream ois = new ObjectInputStream(is)) {
                         while (true) {
                             SerAnnotatedElement el;
                             try {
@@ -192,8 +190,6 @@ public class Indexer extends AbstractProcessor {
                                 elements.put(el.key(), el);
                             }
                         }
-                    } finally {
-                        is.close();
                     }
                 } catch (FileNotFoundException|NoSuchFileException x) {
                     // OK, created for the first time
@@ -201,29 +197,23 @@ public class Indexer extends AbstractProcessor {
                 FileObject out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
                         "", METAINF_ANNOTATIONS + annName,
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));
-                OutputStream os = out.openOutputStream();
-                try {
+                try (OutputStream os = out.openOutputStream()) {
                     ObjectOutputStream oos = new ObjectOutputStream(os);
                     for (SerAnnotatedElement el : elements.values()) {
                         oos.writeObject(el);
                     }
                     oos.writeObject(null);
                     oos.flush();
-                } finally {
-                    os.close();
                 }
                 out = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT,
                         "", METAINF_ANNOTATIONS + annName + ".txt",
                         originatingElementsByAnn.get(annName).toArray(new Element[0]));
-                Writer w = out.openWriter();
-                try {
+                try (Writer w = out.openWriter()) {
                     w.write("# informational; use java -jar sezpoz.jar to see authoritative contents\n");
                     for (SerAnnotatedElement el : elements.values()) {
                         w.write(el.toString());
                         w.write('\n');
                     }
-                } finally {
-                    w.close();
                 }
             } catch (IOException x) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, x.toString());
