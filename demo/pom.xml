@@ -21,6 +21,11 @@
             </plugin>
         </plugins>
     </build>
+    <!-- https://stackoverflow.com/a/53769250/12916
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+    -->
     <modules>
         <module>app</module>
         <module>api</module>
