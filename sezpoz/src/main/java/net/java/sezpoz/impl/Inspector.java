@@ -22,15 +22,11 @@ public class Inspector {
         for (String arg : args) {
             System.out.println("--- " + arg);
             byte[] magic = new byte[4];
-            InputStream is = new FileInputStream(arg);
-            try {
+            try (InputStream is = new FileInputStream(arg)) {
                 is.read(magic, 0, 4);
-            } finally {
-                is.close();
             }
             if (Arrays.equals(magic, ZIP_MAGIC)) {
-                JarFile jf = new JarFile(arg, false);
-                try {
+                try (JarFile jf = new JarFile(arg, false)) {
                     Enumeration<JarEntry> entries = jf.entries();
                     while (entries.hasMoreElements()) {
                         JarEntry entry = entries.nextElement();
@@ -41,33 +37,22 @@ public class Inspector {
                                 continue;
                             }
                             System.out.println("# " + annotation);
-                            is = jf.getInputStream(entry);
-                            try {
+                            try (InputStream is = jf.getInputStream(entry)) {
                                 is.read(magic, 0, 4);
-                            } finally {
-                                is.close();
                             }
                             if ((Arrays.equals(magic, SER_MAGIC))) {
-                                is = jf.getInputStream(entry);
-                                try {
+                                try (InputStream is = jf.getInputStream(entry)) {
                                     dump(is);
-                                } finally {
-                                    is.close();
                                 }
                             } else {
                                 System.err.println("does not look like a Java serialized file");
                             }
                         }
                     }
-                } finally {
-                    jf.close();
                 }
             } else if (Arrays.equals(magic, SER_MAGIC)) {
-                is = new FileInputStream(arg);
-                try {
+                try (InputStream is = new FileInputStream(arg)) {
                     dump(is);
-                } finally {
-                    is.close();
                 }
             } else {
                 System.err.println("does not look like either a JAR file or a Java serialized file");
