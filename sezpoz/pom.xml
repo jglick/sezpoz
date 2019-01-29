@@ -55,7 +55,7 @@
                     <excludes>
                         <exclude>**/TestUtils.java</exclude>
                     </excludes>
-                    <forkMode>pertest</forkMode>
+                    <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
             <plugin>
