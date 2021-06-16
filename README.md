@@ -10,23 +10,29 @@ SezPoz is a lightweight and easy-to-learn library that lets you perform modular 
 
 Sources are in the form of Maven projects. To build:
 
-    mvn install
+```bash
+mvn install
+```
 
 To try the demo application:
 
-    mvn -f demo/app/pom.xml exec:exec
+```bash
+mvn -f demo/app/pom.xml exec:exec
+```
 
 Binaries, sources, and Javadoc can all be downloaded from the Maven Central repository: [Maven repository][3].
 
 For usage from Maven applications, use the artifact `net.java.sezpoz:sezpoz`, for example:
 
-    <dependencies>
-      <dependency>
-        <groupId>net.java.sezpoz</groupId>
-        <artifactId>sezpoz</artifactId>
-        <version>…latest available…</version>
-      </dependency>
-    </dependencies>
+```xml
+<dependencies>
+  <dependency>
+    <groupId>net.java.sezpoz</groupId>
+    <artifactId>sezpoz</artifactId>
+    <version>…latest available…</version>
+  </dependency>
+</dependencies>
+```
 
 See Javadoc for details on particular classes, or just look at demo sources in the `demo` subdirectory in Subversion.
 
@@ -34,59 +40,68 @@ Support for declaring, creating, and inspecting indices of annotated Java elemen
 
 For example, to permit registration of simple menu items, while making it possible to prepare a menu without loading any of them until they are actually selected:
 
-    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
-    @Retention(RetentionPolicy.SOURCE)
-    @Indexable(type=ActionListener.class)
-    public @interface MenuItem {
-        String menuName();
-        String itemName();
-        String iconPath() default "";
-    }
+```java
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.SOURCE)
+@Indexable(type=ActionListener.class)
+public @interface MenuItem {
+    String menuName();
+    String itemName();
+    String iconPath() default "";
+}
+```
 
 A concrete registration might look like:
 
-    @MenuItem(menuName="File", itemName="Print", iconPath=".../print.png")
-    public class PrintAction extends AbstractAction {
-        public void actionPerformed(ActionEvent e) {...}
-    }
+```java
+@MenuItem(menuName="File", itemName="Print", iconPath=".../print.png")
+public class PrintAction extends AbstractAction {
+    public void actionPerformed(ActionEvent e) {...}
+}
+```
 
 Alternatively:
 
-    public class Actions {
-        @MenuItem(menuName="File", itemName="Print")
-        public static Action print() {...}
-    }
+```java
+public class Actions {
+    @MenuItem(menuName="File", itemName="Print")
+    public static Action print() {...}
+}
+```
 
 or even:
 
-    public class Actions {
-        @MenuItem(menuName="File", itemName="Print")
-        public static final Action PRINT = ...;
-    }
+```java
+public class Actions {
+    @MenuItem(menuName="File", itemName="Print")
+    public static final Action PRINT = ...;
+}
+```
 
 To create the index on JDK 6+, just compile your sources normally with javac. (The processor is in the same JAR as this API and should be autodetected.)
 
 Usage is then simple:
 
-    for (final IndexItem<MenuItem,ActionListener> item :
-            Index.load(MenuItem.class, ActionListener.class)) {
-        JMenu menu = new JMenu(item.annotation().menuName());
-        JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
-        String icon = item.annotation().iconPath();
-        if (!icon.equals("")) {
-             menuitem.setIcon(new ImageIcon(icon));
-        }
-        menuitem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    item.instance().actionPerformed(e);
-                } catch (InstantiationException x) {
-                    x.printStackTrace();
-                }
-            }
-        });
+```java
+for (final IndexItem<MenuItem,ActionListener> item :
+        Index.load(MenuItem.class, ActionListener.class)) {
+    JMenu menu = new JMenu(item.annotation().menuName());
+    JMenuItem menuitem = new JMenuItem(item.annotation().itemName());
+    String icon = item.annotation().iconPath();
+    if (!icon.equals("")) {
+         menuitem.setIcon(new ImageIcon(icon));
     }
-
+    menuitem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                item.instance().actionPerformed(e);
+            } catch (InstantiationException x) {
+                x.printStackTrace();
+            }
+        }
+    });
+}
+```
 
 Known limitations:
 
