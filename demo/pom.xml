@@ -14,6 +14,12 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-proc:full</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -21,11 +27,6 @@
             </plugin>
         </plugins>
     </build>
-    <!-- https://stackoverflow.com/a/53769250/12916
-    <properties>
-        <sonar.skip>true</sonar.skip>
-    </properties>
-    -->
     <modules>
         <module>app</module>
         <module>api</module>

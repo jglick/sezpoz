@@ -52,8 +52,8 @@ import net.java.sezpoz.impl.SerAnnotatedElement;
  * Represents an index of a single annotation.
  * Indices are <em>not</em> automatically cached
  * (but reading them should be pretty cheap anyway).
- * @param A the type of annotation to load
- * @param I the type of instance which will be created
+ * @param <A> the type of annotation to load
+ * @param <I> the type of instance which will be created
  */
 public final class Index<A extends Annotation,I> implements Iterable<IndexItem<A,I>> {
 
