@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-      <maven>3.0</maven>
-    </prerequisites>
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
     <groupId>net.java.sezpoz</groupId>
     <artifactId>pom</artifactId>
     <packaging>pom</packaging>
@@ -21,88 +13,95 @@
             <email>jglick@cloudbees.com</email>
             <name>Jesse Glick</name>
             <id>jglick</id>
+            <organization>CloudBees</organization>
+            <organizationUrl>https://github.com/jglick</organizationUrl>
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git@github.com:jglick/sezpoz.git</connection>
-        <developerConnection>scm:git:git@github.com:jglick/sezpoz.git</developerConnection>
-        <url>git@github.com:jglick/sezpoz.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>scm:git:https://github.com/jglick/sezpoz</connection>
+        <developerConnection>scm:git:https://github.com/jglick/sezpoz</developerConnection>
+        <url>https://github.com/jglick/sezpoz</url>
+        <tag>HEAD</tag>
+    </scm>
     <licenses>
         <license>
             <name>CDDL or GPL 2 with Classpath Exception</name>
             <url>http://www.netbeans.org/cddl-gplv2.html</url>
         </license>
     </licenses>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
+                    <version>3.15.0</version>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <release>11</release>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
                     <version>3.5.1</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.4</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.6.0-M1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.5.0</version>
+                    <version>3.6.3</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.3.1</version>
+                    <configuration>
+                        <releaseProfiles>central-release</releaseProfiles>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
-    </build>
-    <reporting>
         <plugins>
             <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.11.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.9</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
-    </reporting>
+    </build>
     <modules>
         <module>sezpoz</module>
         <!--<module>perftest</module>-->
@@ -110,38 +109,42 @@
     </modules>
     <profiles>
         <profile>
-            <id>sonar</id>
-            <properties>
-                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-                <sonar.organization>jglick-github</sonar.organization>
-                <!-- https://stackoverflow.com/a/53769250/12916
-                <sonar.projectKey>jglick_sezpoz</sonar.projectKey>
-                -->
-                <sonar.exclusions>**/demo/**/*,**/Inspector.java</sonar.exclusions> <!-- https://stackoverflow.com/a/53769250/12916 -->
-            </properties>
+            <id>central-release</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.sonarsource.scanner.maven</groupId>
-                        <artifactId>sonar-maven-plugin</artifactId>
-                        <version>3.5.0.1254</version>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
-                                <phase>install</phase>
+                                <id>attach-sources</id>
                                 <goals>
-                                    <goal>sonar</goal>
+                                    <goal>jar-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.2</version>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.12.0</version>
                         <executions>
                             <execution>
+                                <id>attach-javadocs</id>
                                 <goals>
-                                    <goal>prepare-agent</goal>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>

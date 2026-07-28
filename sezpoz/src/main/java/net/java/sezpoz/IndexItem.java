@@ -62,8 +62,8 @@ import net.java.sezpoz.impl.SerTypeConst;
  * May be associated with a class, method, or field.
  * Caches result of {@link #element} and {@link #instance} after first call.
  * Not thread-safe.
- * @param A the type of annotation being loaded
- * @param I the type of instance being loaded
+ * @param <A> the type of annotation being loaded
+ * @param <I> the type of instance being loaded
  */
 public final class IndexItem<A extends Annotation,I> {
 
