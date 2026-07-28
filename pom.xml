@@ -103,10 +103,15 @@
     </build>
     <modules>
         <module>sezpoz</module>
-        <!--<module>perftest</module>-->
-        <module>demo</module>
     </modules>
     <profiles>
+        <profile>
+            <id>demo</id>
+            <modules>
+                <module>demo</module>
+                <!--<module>perftest</module>-->
+            </modules>
+        </profile>
         <profile>
             <id>central-release</id>
             <build>

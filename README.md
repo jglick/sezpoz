@@ -17,7 +17,8 @@ mvn install
 To try the demo application:
 
 ```bash
-mvn -f demo/app/pom.xml exec:exec
+mvnd -Pdemo clean install
+mvnd -Pdemo -pl demo/app exec:exec
 ```
 
 Binaries, sources, and Javadoc can all be downloaded from the Maven Central repository: [Maven repository][3].

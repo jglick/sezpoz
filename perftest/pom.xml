@@ -45,20 +45,6 @@
                     </arguments>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.11.0</version>
-                <configuration>
-                    <skipBundling>true</skipBundling>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
